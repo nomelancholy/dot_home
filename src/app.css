@@ -1,0 +1,231 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+  @keyframes aurora {
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
+    }
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
+    }
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
+    }
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+  }
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite
+;
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+  --animate-pulse: pulse var(--duration) ease-out infinite;
+  @keyframes pulse {
+  0%, 100% {
+    boxShadow: 0 0 0 0 var(--pulse-color);
+    }
+  50% {
+    boxShadow: 0 0 0 8px var(--pulse-color);
+    }
+  }
+  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  @keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+    }
+  }
+  @keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+    }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+    }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+    }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+    }
+  }}
+
+:root {
+  --radius: 0.5rem;
+
+  /* Main backgrounds & foregrounds */
+  --background: oklch(1 0 0); /* 밝은 흰색 */
+  --foreground: oklch(0.18 0.01 270); /* 어두운 네이비/블루 계열 */
+
+  /* Card & Popover */
+  --card: oklch(0.98 0.01 270); /* 약간 푸른빛 흰색 */
+  --card-foreground: oklch(0.22 0.02 270); /* 진한 네이비 */
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.01 270);
+
+  /* Primary (메인 블루) */
+  --primary: oklch(0.507 0.142 270.6); /* 기존 파란색 */
+  --primary-foreground: oklch(0.98 0.01 270); /* 밝은 흰색/블루 */
+
+  /* Secondary (보조, 연보라/블루) */
+  --secondary: oklch(0.92 0.04 280); /* 연보라/블루 */
+  --secondary-foreground: oklch(0.22 0.02 270);
+
+  /* Muted (중간톤, 연한 회색/블루) */
+  --muted: oklch(0.95 0.01 270);
+  --muted-foreground: oklch(0.4 0.02 270);
+
+  /* Accent (강조, 밝은 하늘색) */
+  --accent: oklch(0.85 0.12 250); /* 밝은 하늘색 */
+  --accent-foreground: oklch(0.22 0.02 270);
+
+  /* Destructive (경고, 밝은 레드/오렌지) */
+  --destructive: oklch(0.65 0.18 30); /* 오렌지/레드 */
+  --destructive-foreground: oklch(0.98 0.01 270);
+
+  /* Border, Input, Ring */
+  --border: oklch(0.92 0.01 270);
+  --input: oklch(0.92 0.01 270);
+  --ring: oklch(0.507 0.142 270.6);
+
+  /* Chart colors (예시) */
+  --chart-1: oklch(0.65 0.18 250);
+  --chart-2: oklch(0.6 0.12 185);
+  --chart-3: oklch(0.4 0.07 227);
+  --chart-4: oklch(0.82 0.19 85);
+  --chart-5: oklch(0.77 0.18 70);
+
+  /* Sidebar */
+  --sidebar: oklch(0.98 0.01 270);
+  --sidebar-foreground: oklch(0.18 0.01 270);
+  --sidebar-primary: oklch(0.507 0.142 270.6);
+  --sidebar-primary-foreground: oklch(0.98 0.01 270);
+  --sidebar-accent: oklch(0.85 0.12 250);
+  --sidebar-accent-foreground: oklch(0.22 0.02 270);
+  --sidebar-border: oklch(0.92 0.01 270);
+  --sidebar-ring: oklch(0.507 0.142 270.6);
+}
+
+.dark {
+  --background: oklch(0.18 0.01 270); /* 어두운 네이비/블루 */
+  --foreground: oklch(0.98 0.01 270); /* 밝은 흰색/블루 */
+
+  --card: oklch(0.22 0.02 270); /* 진한 네이비 */
+  --card-foreground: oklch(0.98 0.01 270);
+
+  --popover: oklch(0.22 0.02 270);
+  --popover-foreground: oklch(0.98 0.01 270);
+
+  --primary: oklch(0.507 0.142 270.6); /* 동일한 파란색 (포인트 컬러) */
+  --primary-foreground: oklch(0.98 0.01 270);
+
+  --secondary: oklch(0.32 0.04 280); /* 어두운 연보라/블루 */
+  --secondary-foreground: oklch(0.98 0.01 270);
+
+  --muted: oklch(0.25 0.01 270); /* 어두운 회색/블루 */
+  --muted-foreground: oklch(0.7 0.02 270);
+
+  --accent: oklch(0.35 0.08 250); /* 어두운 하늘색 */
+  --accent-foreground: oklch(0.98 0.01 270);
+
+  --destructive: oklch(0.55 0.18 30); /* 어두운 오렌지/레드 */
+  --destructive-foreground: oklch(0.98 0.01 270);
+
+  --border: oklch(0.22 0.02 270 / 60%); /* 반투명 네이비 */
+  --input: oklch(0.22 0.02 270 / 80%);
+  --ring: oklch(0.507 0.142 270.6);
+
+  /* Chart colors (예시) */
+  --chart-1: oklch(0.45 0.18 250);
+  --chart-2: oklch(0.4 0.12 185);
+  --chart-3: oklch(0.25 0.07 227);
+  --chart-4: oklch(0.55 0.19 85);
+  --chart-5: oklch(0.5 0.18 70);
+
+  /* Sidebar */
+  --sidebar: oklch(0.22 0.02 270);
+  --sidebar-foreground: oklch(0.98 0.01 270);
+  --sidebar-primary: oklch(0.507 0.142 270.6);
+  --sidebar-primary-foreground: oklch(0.98 0.01 270);
+  --sidebar-accent: oklch(0.35 0.08 250);
+  --sidebar-accent-foreground: oklch(0.98 0.01 270);
+  --sidebar-border: oklch(0.22 0.02 270 / 60%);
+  --sidebar-ring: oklch(0.507 0.142 270.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
