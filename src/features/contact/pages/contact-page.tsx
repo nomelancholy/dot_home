@@ -3,7 +3,7 @@ import { ScratchToReveal } from "@/common/components/ui/scratch-to-reveal";
 export default function ContactPage() {
   return (
     <div className="grid grid-cols-2 gap-4">
-      <img src="/assets/24.jpg" alt="" />
+      <img src="/assets/1.jpg" alt="" />
       <div>
         <div>
           <h3>Instagram</h3>
