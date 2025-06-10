@@ -14,10 +14,39 @@ export default function ContactPage() {
   useEffect(() => {
     function initializeMap() {
       if (window.naver && window.naver.maps && mapRef.current) {
-        new window.naver.maps.Map(mapRef.current, {
-          center: new window.naver.maps.LatLng(37.566826, 126.9786567),
-          zoom: 15,
+        const position = new window.naver.maps.LatLng(
+          37.562823554,
+          126.99361333732
+        );
+
+        const map = new window.naver.maps.Map(mapRef.current, {
+          center: position,
+          zoom: 16,
         });
+
+        // 마커 생성
+        const marker = new window.naver.maps.Marker({
+          position,
+          map,
+        });
+
+        // 정보창 생성
+        const infoWindow = new window.naver.maps.InfoWindow({
+          content: `<div style="padding:8px;font-size:14px;">
+                        <p>도자기공방 DOT.</P>
+                        <a style="color: #000; text-decoration: underline;" href="https://naver.me/xVBDxK0Q" target="_blank">
+                            네이버 지도로 보기
+                        </a>
+                      </div>`,
+        });
+
+        // 마커 클릭 시 정보창 열기
+        window.naver.maps.Event.addListener(marker, "click", function () {
+          infoWindow.open(map, marker);
+        });
+
+        // 페이지 로드시 바로 정보창 열기
+        infoWindow.open(map, marker);
       }
     }
 
