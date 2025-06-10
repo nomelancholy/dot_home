@@ -1,6 +1,7 @@
 import { BlurFade } from "@/common/components/ui/blur-fade";
-import { TypingAnimation } from "@/common/components/ui/typing-animation";
+// import { TypingAnimation } from "@/common/components/ui/typing-animation";
 import { TextReveal } from "@/common/components/ui/text-reveal";
+import { SparklesText } from "@/components/magicui/sparkles-text";
 
 const images = [
   "1.jpg",
@@ -23,9 +24,9 @@ export default function AboutPage() {
       <BlurFade delay={0.2} duration={0.8} className="w-1/2 h-1/2 py-10">
         <img src="/assets/logo.jpg" alt="logo" />
       </BlurFade>
-      <TypingAnimation className="py-20" duration={80} delay={500}>
+      <SparklesText className="py-20">
         어서오세요 :) 도자기 공방 DOT입니다.
-      </TypingAnimation>
+      </SparklesText>
       <TextReveal>
         {`DOT는 
 Day Off Today의 약자입니다.

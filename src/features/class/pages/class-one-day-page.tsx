@@ -68,9 +68,6 @@ const reviews = [
   },
 ];
 
-const firstRow = reviews.slice(0, reviews.length / 2);
-const secondRow = reviews.slice(reviews.length / 2);
-
 const ReviewCard = ({ username, body }: { username: string; body: string }) => {
   return (
     <figure
@@ -110,11 +107,6 @@ export default function ClassOneDayPage() {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
-        <Marquee pauseOnHover className="[--duration:20s]">
-          {firstRow.map((review) => (
-            <ReviewCard key={review.username} {...review} />
-          ))}
-        </Marquee>
         <Carousel
           className="w-full max-w-6xl h-[600px]"
           plugins={[plugin.current]}
@@ -149,8 +141,8 @@ export default function ClassOneDayPage() {
             />
           ))}
         </div>
-        <Marquee reverse pauseOnHover className="[--duration:20s]">
-          {secondRow.map((review) => (
+        <Marquee pauseOnHover className="[--duration:20s]">
+          {reviews.map((review) => (
             <ReviewCard key={review.username} {...review} />
           ))}
         </Marquee>
@@ -167,7 +159,7 @@ export default function ClassOneDayPage() {
           className="px-6 py-3"
           onClick={() =>
             window.open(
-              "https://map.naver.com/p/entry/place/1180264996?lng=126.99363&lat=37.5628269&placePath=/booking?from=map",
+              "https://booking.naver.com/booking/6/bizes/1177496",
               "_blank",
               "noopener,noreferrer"
             )

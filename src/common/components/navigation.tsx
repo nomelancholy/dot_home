@@ -66,7 +66,7 @@ export default function Navigation() {
             <NavigationMenuList>
               {menus.map((menu) => (
                 <NavigationMenuItem key={menu.name}>
-                  <NavigationMenuLink>
+                  <NavigationMenuLink asChild>
                     <Link to={menu.to}>{menu.name}</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
