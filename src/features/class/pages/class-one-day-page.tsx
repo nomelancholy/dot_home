@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useRef } from "react";
 import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
@@ -6,7 +6,6 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  type CarouselApi,
 } from "@/common/components/ui/carousel";
 import { Marquee } from "@/common/components/ui/marquee";
 import { ShimmerButton } from "@/common/components/ui/shimmer-button";
@@ -90,27 +89,14 @@ const ReviewCard = ({ username, body }: { username: string; body: string }) => {
 };
 
 export default function ClassOneDayPage() {
-  const [api, setApi] = React.useState<CarouselApi>();
-  const [current, setCurrent] = React.useState(0);
-  const [count, setCount] = React.useState(0);
-  const plugin = React.useRef(
-    Autoplay({ delay: 2500, stopOnInteraction: false })
-  );
-
-  React.useEffect(() => {
-    if (!api) return;
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => setCurrent(api.selectedScrollSnap()));
-  }, [api]);
+  const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
+    <div className="flex flex-col items-center justify-center ">
+      <div className="relative flex w-full flex-col items-center justify-center overflow-hidden ">
         <Carousel
-          className="w-full max-w-6xl h-[600px]"
+          className="w-full max-w-6xl h-[600px] "
           plugins={[plugin.current]}
-          setApi={setApi}
           opts={{ loop: true }}
         >
           <CarouselContent>
@@ -129,19 +115,8 @@ export default function ClassOneDayPage() {
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
-        <div className="flex justify-center gap-2 mt-4">
-          {Array.from({ length: count }).map((_, idx) => (
-            <span
-              key={idx}
-              className={`inline-block h-3 w-3 rounded-full transition-all ${
-                idx === current
-                  ? "bg-primary scale-110"
-                  : "bg-gray-300 dark:bg-gray-700"
-              }`}
-            />
-          ))}
-        </div>
-        <Marquee pauseOnHover className="[--duration:20s]">
+
+        <Marquee pauseOnHover className="mt-8 [--duration:40s]">
           {reviews.map((review) => (
             <ReviewCard key={review.username} {...review} />
           ))}
@@ -156,7 +131,7 @@ export default function ClassOneDayPage() {
           borderRadius="16px"
           shimmerDuration="2s"
           background="var(--primary)"
-          className="px-6 py-3"
+          className="px-6 py-3 "
           onClick={() =>
             window.open(
               "https://booking.naver.com/booking/6/bizes/1177496",

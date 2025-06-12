@@ -1,7 +1,7 @@
 import { BlurFade } from "@/common/components/ui/blur-fade";
 // import { TypingAnimation } from "@/common/components/ui/typing-animation";
 import { TextReveal } from "@/common/components/ui/text-reveal";
-import { SparklesText } from "@/components/magicui/sparkles-text";
+import { SparklesText } from "@/common/components/ui/sparkles-text";
 
 const images = [
   "1.jpg",
@@ -15,7 +15,7 @@ const images = [
   "10.jpg",
   "11.jpg",
   "12.jpg",
-  "14.jpg",
+  "13.jpg",
 ];
 
 export default function AboutPage() {
