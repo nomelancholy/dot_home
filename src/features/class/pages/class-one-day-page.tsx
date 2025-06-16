@@ -95,14 +95,17 @@ export default function ClassOneDayPage() {
     <div className="flex flex-col items-center justify-center ">
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden ">
         <Carousel
-          className="w-full max-w-6xl h-[600px] "
+          className="w-full max-w-6xl h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px]"
           plugins={[plugin.current]}
           opts={{ loop: true }}
         >
           <CarouselContent>
             {Array.from({ length: 10 }).map((_, index) => (
-              <CarouselItem key={index} className="basis-1/3">
-                <div className="p-1 h-[600px] flex items-center justify-center">
+              <CarouselItem
+                key={index}
+                className="basis-full sm:basis-1/2 md:basis-1/3"
+              >
+                <div className="p-1 h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] flex items-center justify-center">
                   <img
                     src={`/assets/${index + 1}.jpg`}
                     alt="review"
@@ -112,8 +115,8 @@ export default function ClassOneDayPage() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <CarouselPrevious className="hidden sm:flex" />
+          <CarouselNext className="hidden sm:flex" />
         </Carousel>
 
         <Marquee pauseOnHover className="mt-8 [--duration:40s]">
@@ -121,8 +124,8 @@ export default function ClassOneDayPage() {
             <ReviewCard key={review.username} {...review} />
           ))}
         </Marquee>
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
+        <div className="hidden lg:block pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
+        <div className="hidden lg:block pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
       </div>
       <div className="mt-10">
         <ShimmerButton

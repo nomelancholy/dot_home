@@ -14,9 +14,17 @@ import {
   TabsTrigger,
 } from "@/common/components/ui/tabs";
 import { useEffect, useState } from "react";
-import { BentoGrid, BentoCard } from "@/common/components/ui/bento-grid";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { MapIcon } from "lucide-react";
+import { Badge } from "@/common/components/ui/badge";
+import { Dock, DockIcon } from "@/common/components/ui/dock";
+import { Instagram, MapPin, BookText } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/common/components/ui/tooltip";
 
 const features = [
   {
@@ -88,68 +96,65 @@ export default function ContactPage() {
   }, [api]);
 
   return (
-    <div className="grid grid-cols-2 gap-4 items-start min-h-[800px]">
-      <div className="flex flex-col gap-4 w-full h-full">
-        <h2 className="text-center font-bold text-xl mb-2">Contact</h2>
-        <BentoGrid className="lg:grid-rows-2 lg:grid-cols-2 h-full">
-          {features.map((feature) => (
-            <BentoCard key={feature.name} {...feature} />
-          ))}
-        </BentoGrid>
-      </div>
-      <div className="flex flex-col gap-4 items-center justify-center">
-        <h3 className="text-xl font-bold">오시는 길</h3>
-        <Tabs defaultValue="chungmuro">
-          <TabsList className="w-full cursor-pointer">
-            <TabsTrigger value="chungmuro">충무로역 기준</TabsTrigger>
-            <TabsTrigger value="euljiro">을지로 3가역 기준</TabsTrigger>
+    <div className="flex flex-col items-center mb-8 flex-1 gap-4">
+      <h3 className="text-xl font-bold mt-6 mb-2">오시는 길</h3>
+      <div className="w-full flex flex-col items-center relative">
+        <Tabs defaultValue="chungmuro" className="w-full max-w-xl">
+          <TabsList className="w-full">
+            <TabsTrigger value="chungmuro" className="cursor-pointer">
+              충무로역 기준
+            </TabsTrigger>
+            <TabsTrigger value="euljiro" className="cursor-pointer">
+              을지로 3가역 기준
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="chungmuro">
-            <div className="flex flex-col items-center">
-              <Carousel className="w-full h-[400px] max-w-md" setApi={setApi}>
-                <CarouselContent className="flex items-center">
-                  {Array.from({ length: 10 }).map((_, index) => (
-                    <CarouselItem key={index}>
-                      <img
-                        className="w-full h-full object-cover"
-                        src={`/assets/contact/chung_${(index + 1)
-                          .toString()
-                          .padStart(2, "0")}.jpg`}
-                        alt={`충무로 역 기준 ${index + 1}번째 이미지`}
-                        width={400}
-                        height={400}
-                      />
-                      <p className="text-center pt-4 text-secondary-foreground">
-                        {descriptions.chungmuro[index]}
-                      </p>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-                <div className="flex justify-center gap-2 mt-4">
-                  {Array.from({ length: count }).map((_, idx) => (
-                    <span
-                      key={idx}
-                      className={`inline-block h-3 w-3 rounded-full transition-all ${
-                        idx === current
-                          ? "bg-primary scale-110"
-                          : "bg-gray-300 dark:bg-gray-700"
-                      }`}
+          <TabsContent
+            value="chungmuro"
+            className="min-h-auto flex flex-col items-center"
+          >
+            <Carousel className="relative w-full  max-w-md">
+              <CarouselContent className="flex items-center h-full">
+                {Array.from({ length: 10 }).map((_, index) => (
+                  <CarouselItem key={index} className="h-full">
+                    <img
+                      className="w-full h-full object-cover rounded-lg"
+                      src={`/assets/contact/chung_${(index + 1)
+                        .toString()
+                        .padStart(2, "0")}.jpg`}
+                      alt={`충무로 역 기준 ${index + 1}번째 이미지`}
+                      width={400}
+                      height={400}
                     />
-                  ))}
-                </div>
-              </Carousel>
-            </div>
+                    <p className="text-center pt-4 text-secondary-foreground text-sm sm:text-base">
+                      {descriptions.chungmuro[index]}
+                    </p>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex" />
+              <CarouselNext className="hidden sm:flex" />
+              <div className="flex justify-center gap-2 mt-4">
+                {Array.from({ length: count }).map((_, idx) => (
+                  <span
+                    key={idx}
+                    className={`inline-block h-2 w-2 sm:h-3 sm:w-3 rounded-full transition-all ${
+                      idx === current
+                        ? "bg-primary scale-110"
+                        : "bg-gray-300 dark:bg-gray-700"
+                    }`}
+                  />
+                ))}
+              </div>
+            </Carousel>
           </TabsContent>
           <TabsContent value="euljiro">
-            <div className="flex flex-col items-center">
-              <Carousel className="w-full h-[400px] max-w-md" setApi={setApi}>
-                <CarouselContent className="flex items-center">
+            <div className="flex flex-col items-center relative">
+              <Carousel className="relative w-full  max-w-md" setApi={setApi}>
+                <CarouselContent className="flex items-center h-full">
                   {Array.from({ length: 10 }).map((_, index) => (
-                    <CarouselItem key={index}>
+                    <CarouselItem key={index} className="h-full">
                       <img
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-lg"
                         src={`/assets/contact/eul_${(index + 1)
                           .toString()
                           .padStart(2, "0")}.jpg`}
@@ -157,19 +162,19 @@ export default function ContactPage() {
                         width={400}
                         height={400}
                       />
-                      <p className="text-center pt-4 text-secondary-foreground">
+                      <p className="text-center pt-4 text-secondary-foreground text-sm sm:text-base">
                         {descriptions.euljiro[index]}
                       </p>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
+                <CarouselPrevious className="hidden sm:flex" />
+                <CarouselNext className="hidden sm:flex" />
                 <div className="flex justify-center gap-2 mt-4">
                   {Array.from({ length: count }).map((_, idx) => (
                     <span
                       key={idx}
-                      className={`inline-block h-3 w-3 rounded-full transition-all ${
+                      className={`inline-block h-2 w-2 sm:h-3 sm:w-3 rounded-full transition-all ${
                         idx === current
                           ? "bg-primary scale-110"
                           : "bg-gray-300 dark:bg-gray-700"
@@ -181,6 +186,65 @@ export default function ContactPage() {
             </div>
           </TabsContent>
         </Tabs>
+      </div>
+      <div className="flex justify-center mt-8 mb-8">
+        <TooltipProvider>
+          <Dock
+            iconSize={40}
+            iconMagnification={64}
+            iconDistance={120}
+            direction="middle"
+          >
+            <DockIcon>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="https://www.instagram.com/dot_sej/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="rounded-full"
+                  >
+                    <Instagram className="size-6" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>Instagram</TooltipContent>
+              </Tooltip>
+            </DockIcon>
+            <DockIcon>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="https://naver.me/5PVMsmRt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Naver Map"
+                    className="rounded-full"
+                  >
+                    <MapPin className="size-6" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>Naver Map</TooltipContent>
+              </Tooltip>
+            </DockIcon>
+            <DockIcon>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="https://blog.naver.com/eundi2c"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Blog"
+                    className="rounded-full"
+                  >
+                    <BookText className="size-6" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>Blog</TooltipContent>
+              </Tooltip>
+            </DockIcon>
+          </Dock>
+        </TooltipProvider>
       </div>
     </div>
   );

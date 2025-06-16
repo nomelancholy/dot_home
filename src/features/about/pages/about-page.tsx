@@ -2,6 +2,7 @@ import { BlurFade } from "@/common/components/ui/blur-fade";
 // import { TypingAnimation } from "@/common/components/ui/typing-animation";
 import { TextReveal } from "@/common/components/ui/text-reveal";
 import { SparklesText } from "@/common/components/ui/sparkles-text";
+import { cn } from "@/lib/utils";
 
 const images = [
   "1.jpg",
@@ -21,11 +22,18 @@ const images = [
 export default function AboutPage() {
   return (
     <div className="flex flex-col items-center justify-center">
-      <BlurFade delay={0.2} duration={0.8} className="w-1/2 h-1/2 py-10">
+      <BlurFade
+        delay={0.2}
+        duration={0.8}
+        className="w-1/2 h-1/2 py-10 max-w-3xl max-h-3xl"
+      >
         <img src="/assets/logo.jpg" alt="logo" />
       </BlurFade>
-      <SparklesText className="py-20">
-        어서오세요 :) 도자기 공방 DOT입니다.
+      <SparklesText className="mt-20 text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold">
+        <span>어서오세요 :)</span>
+        <br />
+        <span>도자기 공방 DOT입니다.</span>
+        <br className="hidden md:block" />
       </SparklesText>
       <TextReveal>
         {`DOT는 
@@ -34,13 +42,18 @@ Day Off Today의 약자입니다.
       </TextReveal>
 
       <section id="photos">
-        <div className="columns-2 gap-4 sm:columns-3">
-          {images.map((imageUrl, idx) => (
-            <BlurFade key={imageUrl} delay={0.25 + idx * 0.05} inView>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-7xl mx-auto">
+          {images.map((image, index) => (
+            <BlurFade
+              key={index}
+              delay={0.2 * index}
+              duration={0.8}
+              className="w-full aspect-square rounded-lg shadow-lg overflow-hidden"
+            >
               <img
-                className="mb-4 size-full rounded-lg object-contain"
-                src={`/assets/${imageUrl}`}
-                alt={`Random stock image ${idx + 1}`}
+                src={`/assets/${image}`}
+                alt={`About Image ${index + 1}`}
+                className="w-full h-full object-cover"
               />
             </BlurFade>
           ))}
