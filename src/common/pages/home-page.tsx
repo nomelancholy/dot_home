@@ -4,7 +4,7 @@ export default function HomePage() {
   return (
     <div>
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 grid-rows-6 sm:grid-rows-8 md:grid-rows-10 lg:grid-rows-12 gap-2 sm:gap-3 md:gap-4 relative bg-white max-w-[90vw] max-h-[90vh] aspect-square">
+        <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 grid-rows-6 sm:grid-rows-8 md:grid-rows-10 lg:grid-rows-12 gap-2 sm:gap-3 md:gap-4 relative bg-background max-w-[90vw] max-h-[90vh] aspect-square">
           <BlurFade
             delay={0.4}
             duration={0.8}

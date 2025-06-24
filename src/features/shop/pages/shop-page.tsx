@@ -7,7 +7,10 @@ export default function ShopPage() {
     <div className="flex flex-col items-center justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-7xl mx-auto">
         {Array.from({ length: 12 }).map((_, index) => (
-          <Card key={index} className="w-full bg-white border-none shadow-none">
+          <Card
+            key={index}
+            className="w-full bg-background border-none shadow-none"
+          >
             <CardHeader>
               <Lens>
                 <div className="aspect-square w-full rounded-lg overflow-hidden mb-4">

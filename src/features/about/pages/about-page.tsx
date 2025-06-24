@@ -25,11 +25,15 @@ export default function AboutPage() {
       <BlurFade
         delay={0.2}
         duration={0.8}
-        className="w-1/2 h-1/2 py-10 max-w-3xl max-h-3xl"
+        className="w-1/2 h-1/2 py-10 max-w-3xl max-h-3xl bg-background"
       >
-        <img src="/assets/logo.jpg" alt="logo" />
+        <img
+          src="/assets/logo.jpg"
+          alt="logo"
+          className="bg-background w-full h-full object-contain rounded-2xl"
+        />
       </BlurFade>
-      <SparklesText className="mt-20 text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold">
+      <SparklesText className="mt-20 text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
         <span>어서오세요 :)</span>
         <br />
         <span>도자기 공방 DOT입니다.</span>

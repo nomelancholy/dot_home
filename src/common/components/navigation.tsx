@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -7,18 +7,40 @@ import {
   NavigationMenuLink,
 } from "src/common/components/ui/navigation-menu";
 import { WordRotate } from "./ui/word-rotate";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, Globe, Moon } from "lucide-react";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const saved =
+      typeof window !== "undefined" ? localStorage.getItem("theme") : null;
+    if (
+      saved === "dark" ||
+      (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+      document.documentElement.classList.add("dark");
+      setIsDark(true);
+    } else {
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
+    }
+  }, []);
+
+  function handleToggleDark() {
+    const next = !isDark;
+    setIsDark(next);
+    if (next) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }
 
   const menus = [
     { name: "Home", to: "/" },
@@ -108,12 +130,26 @@ export default function Navigation() {
               />
             </h1>
           </div>
-          {/* <div className="justify-self-end flex items-center gap-2">
-          <Button>
-            <ShoppingCartIcon className="w-4 h-4" />
-            <UserIcon className="w-4 h-4" />
-          </Button>
-        </div> */}
+          <div className="justify-self-end flex items-center gap-2 justify-end">
+            <Button variant="ghost" size="icon" aria-label="Change language">
+              <Globe className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Toggle dark mode"
+              onClick={handleToggleDark}
+              className="cursor-pointer"
+            >
+              <Moon className="w-5 h-5" />
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/auth/login">로그인</Link>
+            </Button>
+            <Button variant="default" size="sm" asChild>
+              <Link to="/auth/signup">가입하기</Link>
+            </Button>
+          </div>
         </div>
       </nav>
     </Sheet>
