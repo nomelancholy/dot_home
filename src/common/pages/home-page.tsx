@@ -1,4 +1,9 @@
 import { BlurFade } from "@/common/components/ui/blur-fade";
+import type { Route } from "./+types/home-page";
+
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Dot Ceramic Studio" }];
+};
 
 export default function HomePage() {
   return (

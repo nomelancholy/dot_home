@@ -3,6 +3,7 @@ import { BlurFade } from "@/common/components/ui/blur-fade";
 import { TextReveal } from "@/common/components/ui/text-reveal";
 import { SparklesText } from "@/common/components/ui/sparkles-text";
 import { cn } from "@/lib/utils";
+import type { Route } from "./+types/about-page";
 
 const images = [
   "1.jpg",
@@ -18,6 +19,10 @@ const images = [
   "12.jpg",
   "13.jpg",
 ];
+
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "DOT | About" }];
+};
 
 export default function AboutPage() {
   return (

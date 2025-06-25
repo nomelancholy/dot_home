@@ -10,6 +10,11 @@ import {
 import { Marquee } from "@/common/components/ui/marquee";
 import { ShimmerButton } from "@/common/components/ui/shimmer-button";
 import { cn } from "@/lib/utils";
+import type { Route } from "./+types/class-one-day-page";
+
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "DOT | Class" }];
+};
 
 const reviews = [
   {

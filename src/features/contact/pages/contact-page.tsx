@@ -14,9 +14,6 @@ import {
   TabsTrigger,
 } from "@/common/components/ui/tabs";
 import { useEffect, useState } from "react";
-import { CopyIcon } from "@radix-ui/react-icons";
-import { MapIcon } from "lucide-react";
-import { Badge } from "@/common/components/ui/badge";
 import { Dock, DockIcon } from "@/common/components/ui/dock";
 import { Instagram, MapPin, BookText } from "lucide-react";
 import {
@@ -25,36 +22,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/common/components/ui/tooltip";
+import type { Route } from "./+types/contact-page";
 
-const features = [
-  {
-    Icon: CopyIcon,
-    name: "Instagram",
-    description: "@dot_sej",
-    href: "https://www.instagram.com/dot_sej/",
-    cta: "Go to Instagram",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:row-start-1 lg:row-end-2 lg:col-start-1 lg:col-end-2",
-  },
-  {
-    Icon: MapIcon,
-    name: "Naver Map",
-    description: "naver 지도 보기",
-    href: "https://naver.me/5PVMsmRt",
-    cta: "Go to Naver Map",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:row-start-1 lg:row-end-3 lg:col-start-2 lg:col-end-3",
-  },
-  {
-    Icon: MapIcon,
-    name: "Blog",
-    description: "dot blog",
-    href: "https://blog.naver.com/eundi2c",
-    cta: "Go to Blog",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:row-start-2 lg:row-end-3 lg:col-start-1 lg:col-end-2",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "DOT | Contact" }];
+};
 
 export default function ContactPage() {
   const descriptions = {

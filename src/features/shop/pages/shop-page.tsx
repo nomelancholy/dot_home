@@ -1,6 +1,11 @@
 import { Card, CardHeader, CardTitle } from "@/common/components/ui/card";
 import { Lens } from "@/common/components/ui/lens";
 import { ShimmerButton } from "@/common/components/ui/shimmer-button";
+import type { Route } from "./+types/shop-page";
+
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "DOT | Shop" }];
+};
 
 export default function ShopPage() {
   return (
