@@ -9,7 +9,8 @@
     "typecheck": "react-router typegen && tsc",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:typegen": "supabase gen types typescript --project-id lkcakaojpugcwfripbom --schema public > database.types.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
@@ -20,7 +21,8 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
-    "@supabase/supabase-js": "^2.50.1",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.50.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
@@ -35,7 +37,9 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.5.3",
-    "tailwind-merge": "^3.3.0"
+    "tailwind-merge": "^3.3.0",
+    "type-fest": "^4.41.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@react-router/dev": "^7.5.3",
