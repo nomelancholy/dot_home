@@ -5,6 +5,7 @@ import {
   serializeCookieHeader,
 } from "@supabase/ssr";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "database.types";
 
 export const browserClient = createBrowserClient<Database>(
@@ -12,9 +13,9 @@ export const browserClient = createBrowserClient<Database>(
   process.env.SUPABASE_ANON_KEY!
 );
 
-export const maskeSSRClient = (request: Request) => {
+export const makeSSRClient = (request: Request) => {
   const headers = new Headers();
-  const serverSideClient = createServerClient<Database>(
+  const serverSideClient = createServerClient<SupabaseClient<Database>>(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
     {

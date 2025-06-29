@@ -19,5 +19,6 @@ export default [
   ...prefix("auth", [
     route("/login", "features/auth/pages/login-page.tsx"),
     route("/signup", "features/auth/pages/signup-page.tsx"),
+    route("/logout", "features/auth/pages/logout-page.tsx"),
   ]),
 ] satisfies RouteConfig;

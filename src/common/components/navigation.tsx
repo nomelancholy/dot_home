@@ -10,8 +10,16 @@ import { WordRotate } from "./ui/word-rotate";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { MenuIcon, Globe, Moon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-export default function Navigation() {
+export default function Navigation({ isLoggedIn }: { isLoggedIn: boolean }) {
+  console.log("Navigation isLoggedIn :>> ", isLoggedIn);
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -143,12 +151,30 @@ export default function Navigation() {
             >
               <Moon className="w-5 h-5" />
             </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/auth/login">로그인</Link>
-            </Button>
-            <Button variant="default" size="sm" asChild>
-              <Link to="/auth/signup">가입하기</Link>
-            </Button>
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Link to="/auth/logout">로그아웃</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/auth/login">로그인</Link>
+                </Button>
+                <Button variant="default" size="sm" asChild>
+                  <Link to="/auth/signup">가입하기</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </nav>

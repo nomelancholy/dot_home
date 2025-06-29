@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import Navigation from "./common/components/navigation";
 import Footer from "./common/components/footer";
+import { makeSSRClient } from "./supa-client";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -34,10 +35,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+
+  if (user && user.id) {
+    return { user };
+  }
+
+  return { user: null };
+};
+
+export default function App({ loaderData }: Route.ComponentProps) {
+  const { user } = loaderData;
+
+  console.log("root user  :>> ", user);
+
+  const isLoggedIn = user !== null;
+
+  console.log("root isLoggedIn :>> ", isLoggedIn);
+
   return (
     <div className="min-h-screen flex flex-col pt-16 md:pt-20 px-4 md:px-10">
-      <Navigation />
+      <Navigation isLoggedIn={isLoggedIn} />
       <Outlet />
       <Footer />
     </div>

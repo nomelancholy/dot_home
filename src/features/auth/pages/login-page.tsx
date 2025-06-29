@@ -3,7 +3,7 @@ import { Button } from "src/common/components/ui/button";
 import { Form, Link, redirect, useNavigation } from "react-router";
 import type { Route } from "./+types/login-page";
 import { z } from "zod";
-import { maskeSSRClient } from "@/supa-client";
+import { makeSSRClient } from "@/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "로그인" }];
@@ -38,7 +38,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   }
 
   const { email, password } = data;
-  const { client, headers } = maskeSSRClient(request);
+  const { client, headers } = makeSSRClient(request);
   const { error: loginError } = await client.auth.signInWithPassword({
     email,
     password,

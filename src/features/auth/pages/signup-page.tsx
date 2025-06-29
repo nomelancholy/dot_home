@@ -3,7 +3,7 @@ import { Button } from "src/common/components/ui/button";
 import { Form, Link, redirect, useNavigation } from "react-router";
 import { z } from "zod";
 import type { Route } from "./+types/signup-page";
-import { maskeSSRClient } from "@/supa-client";
+import { makeSSRClient } from "@/supa-client";
 
 const formSchema = z.object({
   name: z.string().min(3),
@@ -25,7 +25,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     };
   }
 
-  const { client, headers } = maskeSSRClient(request);
+  const { client, headers } = makeSSRClient(request);
   const { error: signupError } = await client.auth.signUp({
     email: data.email,
     password: data.password,
