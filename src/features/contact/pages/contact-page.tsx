@@ -15,7 +15,7 @@ import {
 } from "@/common/components/ui/tabs";
 import { useEffect, useState } from "react";
 import { Dock, DockIcon } from "@/common/components/ui/dock";
-import { Instagram, MapPin, BookText } from "lucide-react";
+import { Instagram, MapPin, BookText, Mail } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -66,6 +66,40 @@ export default function ContactPage() {
     setCurrent(api.selectedScrollSnap());
     api.on("select", () => setCurrent(api.selectedScrollSnap()));
   }, [api]);
+
+  function EmailCopyIcon() {
+    const [copied, setCopied] = useState(false);
+    const email = "eundi2c@naver.com";
+
+    function handleCopy() {
+      navigator.clipboard.writeText(email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+
+    return (
+      <DockIcon>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={handleCopy}
+              aria-label="Email"
+              className="rounded-full cursor-pointer"
+              type="button"
+            >
+              <Mail className="size-6" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Email</TooltipContent>
+        </Tooltip>
+        {copied && (
+          <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-lg bg-black/90 px-6 py-2 min-w-[240px] text-white text-sm text-center shadow-lg animate-fade-in-out">
+            메일 주소가 복사되었습니다!
+          </div>
+        )}
+      </DockIcon>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center mb-8 flex-1 gap-4">
@@ -215,6 +249,7 @@ export default function ContactPage() {
                 <TooltipContent>Blog</TooltipContent>
               </Tooltip>
             </DockIcon>
+            <EmailCopyIcon />
           </Dock>
         </TooltipProvider>
       </div>

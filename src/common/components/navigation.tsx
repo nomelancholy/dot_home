@@ -143,12 +143,12 @@ export default function Navigation() {
             >
               <Moon className="w-5 h-5" />
             </Button>
-            <Button variant="outline" size="sm" asChild>
+            {/* <Button variant="outline" size="sm" asChild>
               <Link to="/auth/login">로그인</Link>
             </Button>
             <Button variant="default" size="sm" asChild>
               <Link to="/auth/signup">가입하기</Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
       </nav>
