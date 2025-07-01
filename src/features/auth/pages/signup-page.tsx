@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { Route } from "./+types/signup-page";
 import { makeSSRClient } from "@/supa-client";
 
-const formSchema = z.object({
+export const formSchema = z.object({
   name: z.string().min(3),
   username: z.string().min(3),
   email: z.string().email(),
@@ -26,7 +26,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   }
 
   const { client, headers } = makeSSRClient(request);
-  const { error: signupError } = await client.auth.signUp({
+  const { data: signupData, error: signupError } = await client.auth.signUp({
     email: data.email,
     password: data.password,
     options: {
@@ -43,6 +43,9 @@ export const action = async ({ request }: Route.ActionArgs) => {
       formErrors: null,
     };
   }
+
+  console.log("signupData :>> ", signupData);
+  // profile에 정보를 넣자
 
   return redirect("/", {
     headers,

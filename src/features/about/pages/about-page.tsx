@@ -2,7 +2,6 @@ import { BlurFade } from "@/common/components/ui/blur-fade";
 // import { TypingAnimation } from "@/common/components/ui/typing-animation";
 import { TextReveal } from "@/common/components/ui/text-reveal";
 import { SparklesText } from "@/common/components/ui/sparkles-text";
-import { cn } from "@/lib/utils";
 import type { Route } from "./+types/about-page";
 
 const images = [
