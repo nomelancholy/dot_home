@@ -23,12 +23,59 @@ import {
   TooltipTrigger,
 } from "@/common/components/ui/tooltip";
 import type { Route } from "./+types/contact-page";
+import { supabaseAdmin } from "@/supa-client";
+import { Skeleton } from "@/common/components/ui/skeleton";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "DOT | Contact" }];
 };
 
-export default function ContactPage() {
+export const loader = async ({}: Route.LoaderArgs) => {
+  const { data: images } = await supabaseAdmin.storage
+    .from("assets")
+    .list("contact");
+
+  const contactImages: Record<string, string[]> = {
+    chungmuro: [],
+    euljiro: [],
+  };
+
+  images?.forEach((image) => {
+    const { data: urlData } = supabaseAdmin.storage
+      .from("assets")
+      .getPublicUrl(`contact/${image.name}`);
+
+    if (image.name.includes("chung")) {
+      contactImages.chungmuro.push(urlData.publicUrl);
+    } else if (image.name.includes("eul")) {
+      contactImages.euljiro.push(urlData.publicUrl);
+    }
+  });
+
+  return contactImages;
+};
+
+function ImageWithSkeleton({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px]">
+      {!loaded && (
+        <Skeleton className="absolute inset-0 w-full h-full rounded-lg bg-background" />
+      )}
+      <img
+        className={`w-full h-full object-cover rounded-lg transition-opacity duration-300 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+        src={src}
+        alt={alt}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
+export default function ContactPage({ loaderData }: Route.ComponentProps) {
   const descriptions = {
     euljiro: [
       "을지로 3가역 8번 출구로 나와서",
@@ -86,18 +133,13 @@ export default function ContactPage() {
           >
             <Carousel className="relative w-full  max-w-md">
               <CarouselContent className="flex items-center h-full">
-                {Array.from({ length: 10 }).map((_, index) => (
+                {loaderData?.chungmuro.map((image, index) => (
                   <CarouselItem key={index} className="h-full">
-                    <img
-                      className="w-full h-full object-cover rounded-lg"
-                      src={`/assets/contact/chung_${(index + 1)
-                        .toString()
-                        .padStart(2, "0")}.jpg`}
+                    <ImageWithSkeleton
+                      src={image}
                       alt={`충무로 역 기준 ${index + 1}번째 이미지`}
-                      width={400}
-                      height={400}
                     />
-                    <p className="text-center pt-4 text-secondary-foreground text-sm sm:text-base">
+                    <p className="text-center pt-4 text-sm sm:text-base">
                       {descriptions.chungmuro[index]}
                     </p>
                   </CarouselItem>
@@ -123,18 +165,13 @@ export default function ContactPage() {
             <div className="flex flex-col items-center relative">
               <Carousel className="relative w-full  max-w-md" setApi={setApi}>
                 <CarouselContent className="flex items-center h-full">
-                  {Array.from({ length: 10 }).map((_, index) => (
+                  {loaderData?.euljiro.map((image, index) => (
                     <CarouselItem key={index} className="h-full">
-                      <img
-                        className="w-full h-full object-cover rounded-lg"
-                        src={`/assets/contact/eul_${(index + 1)
-                          .toString()
-                          .padStart(2, "0")}.jpg`}
+                      <ImageWithSkeleton
+                        src={image}
                         alt={`을지로 3가 역 기준 ${index + 1}번째 이미지`}
-                        width={400}
-                        height={400}
                       />
-                      <p className="text-center pt-4 text-secondary-foreground text-sm sm:text-base">
+                      <p className="text-center pt-4 text-sm sm:text-base">
                         {descriptions.euljiro[index]}
                       </p>
                     </CarouselItem>
