@@ -63,6 +63,7 @@ export default function SignupPage({ actionData }: Route.ComponentProps) {
   const [confirm, setConfirm] = useState("");
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -115,8 +116,26 @@ export default function SignupPage({ actionData }: Route.ComponentProps) {
           required
           className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
         />
-
-        <Button type="submit" className="w-full">
+        <div className="flex items-center space-x-2">
+          <input
+            id="terms"
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            required
+          />
+          <label htmlFor="terms" className="text-sm">
+            <a
+              href="/auth/terms"
+              target="_blank"
+              className="underline text-primary"
+            >
+              이용 약관
+            </a>
+            에 동의합니다.
+          </label>
+        </div>
+        <Button type="submit" className="w-full" disabled={!agreed}>
           회원가입
         </Button>
         <div className="text-center text-sm">
