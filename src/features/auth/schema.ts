@@ -8,6 +8,7 @@ import {
   pgEnum,
   boolean,
   bigint,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 const users = pgSchema("auth").table("users", {
@@ -40,6 +41,7 @@ export const addresses = pgTable("addresses", {
   }),
   address_name: text().notNull(),
   address: text().notNull(),
-  zipcode: text().notNull(),
-  is_default: boolean().notNull(),
+  zipcode: varchar("zipcode", { length: 10 }).notNull(),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });

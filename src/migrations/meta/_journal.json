@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1750859071175,
-      "tag": "0000_rare_lionheart",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1751292444692,
-      "tag": "0001_bouncy_skin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1751359449459,
-      "tag": "0002_vengeful_logan",
+      "when": 1752066511535,
+      "tag": "0000_concerned_blockbuster",
       "breakpoints": true
     }
   ]
