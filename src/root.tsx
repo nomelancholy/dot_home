@@ -12,6 +12,7 @@ import "./app.css";
 import Navigation from "./common/components/navigation";
 import Footer from "./common/components/footer";
 import { makeSSRClient } from "./supa-client";
+import { Toaster } from "@/common/components/ui/sonner";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -30,6 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <Toaster position="bottom-center" />
       </body>
     </html>
   );
@@ -59,7 +61,10 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="min-h-screen flex flex-col pt-16 md:pt-20 px-4 md:px-10">
-      <Navigation isLoggedIn={isLoggedIn} />
+      <Navigation
+        isLoggedIn={isLoggedIn}
+        name={user?.user_metadata?.name ?? ""}
+      />
       <Outlet />
       <Footer />
     </div>
