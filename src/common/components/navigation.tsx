@@ -17,11 +17,19 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useTranslation } from "react-i18next";
 
-export default function Navigation({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function Navigation({
+  isLoggedIn,
+  name,
+}: {
+  isLoggedIn: boolean;
+  name: string;
+}) {
   console.log("Navigation isLoggedIn :>> ", isLoggedIn);
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const saved =
@@ -131,17 +139,42 @@ export default function Navigation({ isLoggedIn }: { isLoggedIn: boolean }) {
           </div>
           <div className="justify-self-center w-full text-center">
             <h1>
-              <WordRotate
-                words={["DOT.", "Day Off Today"]}
-                className="w-full text-2xl font-bold font-serif"
-                duration={5000}
-              />
+              <Link to="/" className="block">
+                <WordRotate
+                  words={["DOT.", "Day Off Today"]}
+                  className="w-full text-2xl font-bold font-serif"
+                  duration={5000}
+                />
+              </Link>
             </h1>
           </div>
           <div className="justify-self-end flex items-center gap-2 justify-end">
-            <Button variant="ghost" size="icon" aria-label="Change language">
-              <Globe className="w-5 h-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Change language"
+                  className="cursor-pointer"
+                >
+                  <Globe className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => i18n.changeLanguage("ko")}>
+                  🇰🇷 한국어
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => i18n.changeLanguage("en")}>
+                  🇺🇸 English
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => i18n.changeLanguage("ja")}>
+                  🇯🇵 日本語
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => i18n.changeLanguage("zh")}>
+                  🇨🇳 中文
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="icon"

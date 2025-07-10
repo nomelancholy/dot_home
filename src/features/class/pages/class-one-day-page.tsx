@@ -13,6 +13,7 @@ import type { Route } from "./+types/class-one-day-page";
 import { BentoGrid, BentoCard } from "@/common/components/ui/bento-grid";
 import { supabaseAdmin } from "@/supa-client";
 import { Skeleton } from "@/common/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "DOT | Class" }];
@@ -190,7 +191,7 @@ export const loader = async ({}: Route.LoaderArgs) => {
 
 export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
   const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
-
+  const { t } = useTranslation();
   const thumbnails = loaderData.thumbnails ?? {};
 
   return (
@@ -200,7 +201,7 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
           <BentoGrid>
             <BentoCard
               className="row-span-2"
-              name="디오티 물레 클래스(90분)"
+              name={t("class_pottery_name")}
               background={
                 <img
                   src={thumbnails.potteryWheel}
@@ -208,13 +209,13 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
                   className="absolute inset-0"
                 />
               }
-              description="도자공예과 출신 선생님의 전문적인 수업으로 만족스러운 결과물을 만들 수 있도록 도와드립니다."
+              description={t("class_pottery_desc")}
               href="https://m.booking.naver.com/booking/6/bizes/1177496/items/6731133?area=ple&lang=ko&tab=book&theme=place"
-              cta="예약하러가기"
+              cta={t("class_cta")}
             ></BentoCard>
             <BentoCard
               className=""
-              name="컬러 클레이 클래스 (90-120분)"
+              name={t("class_color_name")}
               background={
                 <img
                   src={thumbnails.color}
@@ -222,13 +223,13 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
                   className="absolute inset-0"
                 />
               }
-              description="연리문이라는 전통 기법을 사용해 알록달록한 색소지(흙)으로 자신만의 그릇을 만드는 수업입니다."
+              description={t("class_color_desc")}
               href="https://m.booking.naver.com/booking/6/bizes/1177496/items/6581778?area=bmp&lang=ko&service-target=map-pc&tab=book&theme=place"
-              cta="예약하러가기"
+              cta={t("class_cta")}
             ></BentoCard>
             <BentoCard
               className=""
-              name="자유 원데이 클래스 (120분)"
+              name={t("class_free_name")}
               background={
                 <img
                   src={thumbnails.free}
@@ -236,9 +237,9 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
                   className="absolute inset-0"
                 />
               }
-              description="백자토(흙)를 가지고 각자 원하시는 모양의 도자기를 만드는 수업입니다."
+              description={t("class_free_desc")}
               href="https://m.booking.naver.com/booking/6/bizes/1177496/items/5955427?area=ple&lang=ko&tab=book&theme=place"
-              cta="예약하러가기"
+              cta={t("class_cta")}
             ></BentoCard>
           </BentoGrid>
         </div>
@@ -250,7 +251,7 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
         </Marquee>
         <div className="w-full flex flex-col items-center mt-16 mb-4">
           <h2 className="text-2xl font-bold text-center mb-2">
-            실제 수강생 체험 모습 및 완성 작품
+            {t("class_review_title")}
           </h2>
         </div>
 

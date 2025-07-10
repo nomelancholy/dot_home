@@ -26,6 +26,7 @@ import type { Route } from "./+types/contact-page";
 import { supabaseAdmin } from "@/supa-client";
 import { Skeleton } from "@/common/components/ui/skeleton";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "DOT | Contact" }];
@@ -83,31 +84,14 @@ declare global {
 }
 
 export default function ContactPage({ loaderData }: Route.ComponentProps) {
+  const { t, i18n } = useTranslation();
   const descriptions = {
-    euljiro: [
-      "을지로 3가역 8번 출구로 나와서",
-      "쭉 진진합니다.",
-      "사거리에서도 직진합니다",
-      "청기와타운을 지나면 왼쪽에 작은 골목이 있습니다",
-      "그 골목으로 들어오면",
-      "우측 10시 방향에",
-      "DOT 간판이 작게 걸려있습니다",
-      "그 골목으로 들어오셔서",
-      "계단을 올라오시면",
-      "어세오세요 DOT입니다",
-    ],
-    chungmuro: [
-      "충무로역 7번 출구로 나와서",
-      "쭉 직진합니다",
-      "간판 가게를 끼고 오른쪽을 보면",
-      "길로 들어와서",
-      "첫번째 골목에서 왼쪽을 보시면",
-      "통일집 간판 뒤에 DOT 간판 있습니다",
-      "내려옵니다",
-      "그 골목으로 들어오셔서",
-      "계단을 올라오시면",
-      "어세오세요 DOT입니다",
-    ],
+    euljiro: Array.from({ length: 10 }, (_, i) =>
+      t(`contact_directions_euljiro_${i}`)
+    ),
+    chungmuro: Array.from({ length: 10 }, (_, i) =>
+      t(`contact_directions_chungmuro_${i}`)
+    ),
   };
 
   const [api, setApi] = useState<CarouselApi>();
@@ -150,9 +134,9 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
         // 정보창 생성
         const infoWindow = new window.naver.maps.InfoWindow({
           content: `<div style="padding:8px;font-size:14px;">
-                        <p>도자기공방 DOT.</P>
+                        <p>${t("contact_naver_map_info")}</p>
                         <a style="color: #000; text-decoration: underline;" href="https://naver.me/xVBDxK0Q" target="_blank">
-                            네이버 지도로 보기
+                            ${t("contact_naver_map_link")}
                         </a>
                       </div>`,
         });
@@ -185,7 +169,7 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
           ?.addEventListener("load", initializeMap);
       }
     }
-  }, []);
+  }, [t]);
 
   return (
     <div className="flex flex-col items-center mb-8 flex-1 gap-4">
@@ -210,7 +194,7 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
                     <Instagram className="size-6" />
                   </a>
                 </TooltipTrigger>
-                <TooltipContent>Instagram</TooltipContent>
+                <TooltipContent>{t("contact_instagram")}</TooltipContent>
               </Tooltip>
             </DockIcon>
             <DockIcon>
@@ -226,7 +210,7 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
                     <MapPin className="size-6" />
                   </a>
                 </TooltipTrigger>
-                <TooltipContent>Naver Map</TooltipContent>
+                <TooltipContent>{t("contact_naver_map")}</TooltipContent>
               </Tooltip>
             </DockIcon>
             <DockIcon>
@@ -242,7 +226,7 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
                     <BookText className="size-6" />
                   </a>
                 </TooltipTrigger>
-                <TooltipContent>Blog</TooltipContent>
+                <TooltipContent>{t("contact_blog")}</TooltipContent>
               </Tooltip>
             </DockIcon>
             <DockIcon>
@@ -254,13 +238,13 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
                     className="rounded-full focus:outline-none cursor-pointer"
                     onClick={() => {
                       navigator.clipboard.writeText("eundi2c@naver.com");
-                      toast("이메일이 복사되었습니다");
+                      toast(t("contact_email_copied"));
                     }}
                   >
                     <Mail className="size-6" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent>이메일 복사</TooltipContent>
+                <TooltipContent>{t("contact_copy_email")}</TooltipContent>
               </Tooltip>
             </DockIcon>
           </Dock>
@@ -272,10 +256,10 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
         <Tabs defaultValue="chungmuro" className="w-full max-w-xl">
           <TabsList className="w-full">
             <TabsTrigger value="chungmuro" className="cursor-pointer">
-              충무로역 기준
+              {t("contact_directions_chungmuro_title")}
             </TabsTrigger>
             <TabsTrigger value="euljiro" className="cursor-pointer">
-              을지로 3가역 기준
+              {t("contact_directions_euljiro_title")}
             </TabsTrigger>
           </TabsList>
           <TabsContent
@@ -288,10 +272,10 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
                   <CarouselItem key={index} className="h-full">
                     <ImageWithSkeleton
                       src={image}
-                      alt={`충무로 역 기준 ${index + 1}번째 이미지`}
+                      alt={t("contact_directions_chungmuro_" + index)}
                     />
                     <p className="text-center pt-4 text-sm sm:text-base">
-                      {descriptions.chungmuro[index]}
+                      {t("contact_directions_chungmuro_" + index)}
                     </p>
                   </CarouselItem>
                 ))}
@@ -320,10 +304,10 @@ export default function ContactPage({ loaderData }: Route.ComponentProps) {
                     <CarouselItem key={index} className="h-full">
                       <ImageWithSkeleton
                         src={image}
-                        alt={`을지로 3가 역 기준 ${index + 1}번째 이미지`}
+                        alt={t("contact_directions_euljiro_" + index)}
                       />
                       <p className="text-center pt-4 text-sm sm:text-base">
-                        {descriptions.euljiro[index]}
+                        {t("contact_directions_euljiro_" + index)}
                       </p>
                     </CarouselItem>
                   ))}
