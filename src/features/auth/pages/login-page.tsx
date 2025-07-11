@@ -120,7 +120,7 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
         </Button>
         <div className="text-center text-sm">
           계정이 없으신가요?{" "}
-          <Link to="/signup" className="text-primary underline">
+          <Link to="/auth/signup" className="text-primary underline">
             회원가입
           </Link>
         </div>
