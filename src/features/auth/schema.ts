@@ -23,19 +23,18 @@ export const profiles = pgTable("profiles", {
     .references(() => users.id, { onDelete: "cascade" }),
   name: text().notNull(),
   phone: text().notNull(),
-  nickname: text("").notNull(),
   email: text("").notNull().unique(),
   role: roles().default("user").notNull(),
-  email_receive_agree: boolean().notNull(),
-  sms_receive_agree: boolean().notNull(),
+  email_consent: boolean().notNull(),
+  phone_consent: boolean().notNull(),
+  agree_terms: boolean().notNull(),
+  agree_privacy: boolean().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const addresses = pgTable("addresses", {
-  address_id: bigint({ mode: "number" })
-    .primaryKey()
-    .generatedAlwaysAsIdentity(),
+  address_id: serial("address_id").primaryKey(),
   profile_id: uuid().references(() => profiles.profile_id, {
     onDelete: "cascade",
   }),

@@ -9,7 +9,7 @@ import {
 import { WordRotate } from "./ui/word-rotate";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
-import { MenuIcon, Globe, Moon } from "lucide-react";
+import { MenuIcon, Globe, Moon, LogIn, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -187,10 +187,9 @@ export default function Navigation({
             {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
+                  <Button variant="ghost" size="icon">
+                    <User className="w-5 h-5" />
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem>
@@ -200,11 +199,10 @@ export default function Navigation({
               </DropdownMenu>
             ) : (
               <>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/auth/login">로그인</Link>
-                </Button>
-                <Button variant="default" size="sm" asChild>
-                  <Link to="/auth/signup">가입하기</Link>
+                <Button variant="ghost" size="icon" asChild>
+                  <Link to="/auth/login">
+                    <LogIn className="w-4 h-4" />
+                  </Link>
                 </Button>
               </>
             )}
