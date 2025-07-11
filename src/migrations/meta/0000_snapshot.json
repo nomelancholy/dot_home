@@ -1,5 +1,5 @@
 {
-  "id": "d940b519-a42a-4346-9799-bd0cacd11467",
+  "id": "96a4d62e-1f43-485c-a6bc-c49cc95c0d76",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -108,12 +108,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "nickname": {
-          "name": "nickname",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "email": {
           "name": "email",
           "type": "text",
@@ -128,14 +122,26 @@
           "notNull": true,
           "default": "'user'"
         },
-        "email_receive_agree": {
-          "name": "email_receive_agree",
+        "email_consent": {
+          "name": "email_consent",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true
         },
-        "sms_receive_agree": {
-          "name": "sms_receive_agree",
+        "phone_consent": {
+          "name": "phone_consent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "agree_terms": {
+          "name": "agree_terms",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "agree_privacy": {
+          "name": "agree_privacy",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true
