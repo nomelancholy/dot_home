@@ -25,6 +25,6 @@ export default [
     route("/logout", "features/auth/pages/logout-page.tsx"),
   ]),
   ...prefix("my", [
-    route("hisotyr",)
+    route("history", "features/my/pages/history-page.tsx"),
   ])
 ] satisfies RouteConfig;
