@@ -44,6 +44,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
     password,
   });
 
+  console.log("loginError :>> ", loginError);
+
   if (loginError) {
     return {
       loginError: loginError.message,

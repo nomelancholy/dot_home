@@ -1,5 +1,5 @@
 {
-  "id": "96a4d62e-1f43-485c-a6bc-c49cc95c0d76",
+  "id": "36d742f9-538a-4acd-9e06-47faa87101cd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,20 +10,9 @@
       "columns": {
         "address_id": {
           "name": "address_id",
-          "type": "bigint",
+          "type": "serial",
           "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "addresses_address_id_seq",
-            "schema": "public",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "9223372036854775807",
-            "cache": "1",
-            "cycle": false
-          }
+          "notNull": true
         },
         "profile_id": {
           "name": "profile_id",
@@ -82,7 +71,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own address": {
+          "name": "authenticated can select own address",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"addresses\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can update own address": {
+          "name": "authenticated can update own address",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"addresses\".\"profile_id\" = auth.uid()",
+          "withCheck": "\"addresses\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can delete own address": {
+          "name": "authenticated can delete own address",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"addresses\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can insert own address": {
+          "name": "authenticated can insert own address",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"addresses\".\"profile_id\" = auth.uid()"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -188,7 +215,46 @@
           ]
         }
       },
-      "policies": {},
+      "policies": {
+        "authenticated can select own profile": {
+          "name": "authenticated can select own profile",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can update own profile except role": {
+          "name": "authenticated can update own profile except role",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"profile_id\" = auth.uid() AND \"profiles\".\"role\" = 'user'",
+          "withCheck": "\"profiles\".\"profile_id\" = auth.uid() AND \"profiles\".\"role\" = 'user'"
+        },
+        "only admin can update role": {
+          "name": "only admin can update role",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "admin"
+          ],
+          "using": "true",
+          "withCheck": "true"
+        },
+        "authenticated can delete own profile": {
+          "name": "authenticated can delete own profile",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"profile_id\" = auth.uid()"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -245,7 +311,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own cart": {
+          "name": "authenticated can select own cart",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"cart\".\"user_id\" = auth.uid()"
+        },
+        "authenticated can insert own cart": {
+          "name": "authenticated can insert own cart",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"cart\".\"user_id\" = auth.uid()"
+        },
+        "authenticated can update own cart": {
+          "name": "authenticated can update own cart",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"cart\".\"user_id\" = auth.uid()",
+          "withCheck": "\"cart\".\"user_id\" = auth.uid()"
+        },
+        "authenticated can delete own cart": {
+          "name": "authenticated can delete own cart",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"cart\".\"user_id\" = auth.uid()"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -320,7 +424,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own cart items": {
+          "name": "authenticated can select own cart items",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"cart_items\".\"cart_id\" IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())"
+        },
+        "authenticated can insert own cart items": {
+          "name": "authenticated can insert own cart items",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"cart_items\".\"cart_id\" IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())"
+        },
+        "authenticated can update own cart items": {
+          "name": "authenticated can update own cart items",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"cart_items\".\"cart_id\" IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())",
+          "withCheck": "\"cart_items\".\"cart_id\" IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())"
+        },
+        "authenticated can delete own cart items": {
+          "name": "authenticated can delete own cart items",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"cart_items\".\"cart_id\" IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -370,7 +512,45 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "public can select categories": {
+          "name": "public can select categories",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "public"
+          ],
+          "using": "true"
+        },
+        "admin can insert categories": {
+          "name": "admin can insert categories",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "admin"
+          ],
+          "withCheck": "auth.role() = 'admin'"
+        },
+        "admin can update categories": {
+          "name": "admin can update categories",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "admin"
+          ],
+          "using": "auth.role() = 'admin'",
+          "withCheck": "auth.role() = 'admin'"
+        },
+        "admin can delete categories": {
+          "name": "admin can delete categories",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "admin"
+          ],
+          "using": "auth.role() = 'admin'"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -429,7 +609,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own order cancellations": {
+          "name": "authenticated can select own order cancellations",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_cancellations\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can insert own order cancellations": {
+          "name": "authenticated can insert own order cancellations",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"order_cancellations\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can update own order cancellations": {
+          "name": "authenticated can update own order cancellations",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_cancellations\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())",
+          "withCheck": "\"order_cancellations\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can delete own order cancellations": {
+          "name": "authenticated can delete own order cancellations",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_cancellations\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -510,7 +728,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own order items": {
+          "name": "authenticated can select own order items",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_items\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can insert own order items": {
+          "name": "authenticated can insert own order items",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"order_items\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can update own order items": {
+          "name": "authenticated can update own order items",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_items\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())",
+          "withCheck": "\"order_items\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can delete own order items": {
+          "name": "authenticated can delete own order items",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_items\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -578,7 +834,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own order refunds": {
+          "name": "authenticated can select own order refunds",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_refunds\".\"payment_id\" IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))"
+        },
+        "authenticated can insert own order refunds": {
+          "name": "authenticated can insert own order refunds",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"order_refunds\".\"payment_id\" IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))"
+        },
+        "authenticated can update own order refunds": {
+          "name": "authenticated can update own order refunds",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_refunds\".\"payment_id\" IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))",
+          "withCheck": "\"order_refunds\".\"payment_id\" IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))"
+        },
+        "authenticated can delete own order refunds": {
+          "name": "authenticated can delete own order refunds",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"order_refunds\".\"payment_id\" IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -682,7 +976,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own orders": {
+          "name": "authenticated can select own orders",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"orders\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can insert own orders": {
+          "name": "authenticated can insert own orders",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"orders\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can update own orders": {
+          "name": "authenticated can update own orders",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"orders\".\"profile_id\" = auth.uid()",
+          "withCheck": "\"orders\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can delete own orders": {
+          "name": "authenticated can delete own orders",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"orders\".\"profile_id\" = auth.uid()"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -816,7 +1148,45 @@
           ]
         }
       },
-      "policies": {},
+      "policies": {
+        "authenticated can select own payments": {
+          "name": "authenticated can select own payments",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"payments\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can insert own payments": {
+          "name": "authenticated can insert own payments",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"payments\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can update own payments": {
+          "name": "authenticated can update own payments",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"payments\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())",
+          "withCheck": "\"payments\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can delete own payments": {
+          "name": "authenticated can delete own payments",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"payments\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -886,7 +1256,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "public can select product_images": {
+          "name": "public can select product_images",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "public"
+          ],
+          "using": "true"
+        },
+        "admin can insert product_images": {
+          "name": "admin can insert product_images",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "admin"
+          ],
+          "withCheck": "auth.role() = 'admin'"
+        },
+        "admin can update product_images": {
+          "name": "admin can update product_images",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "admin"
+          ],
+          "using": "auth.role() = 'admin'",
+          "withCheck": "auth.role() = 'admin'"
+        },
+        "admin can delete product_images": {
+          "name": "admin can delete product_images",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "admin"
+          ],
+          "using": "auth.role() = 'admin'"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -981,7 +1389,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "public can select products": {
+          "name": "public can select products",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "public"
+          ],
+          "using": "true"
+        },
+        "admin can insert products": {
+          "name": "admin can insert products",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "admin"
+          ],
+          "withCheck": "auth.role() = 'admin'"
+        },
+        "admin can update products": {
+          "name": "admin can update products",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "admin"
+          ],
+          "using": "auth.role() = 'admin'",
+          "withCheck": "auth.role() = 'admin'"
+        },
+        "admin can delete products": {
+          "name": "admin can delete products",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "admin"
+          ],
+          "using": "auth.role() = 'admin'"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -1076,7 +1522,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own reviews": {
+          "name": "authenticated can select own reviews",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"reviews\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can insert own reviews": {
+          "name": "authenticated can insert own reviews",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"reviews\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can update own reviews": {
+          "name": "authenticated can update own reviews",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"reviews\".\"profile_id\" = auth.uid()",
+          "withCheck": "\"reviews\".\"profile_id\" = auth.uid()"
+        },
+        "authenticated can delete own reviews": {
+          "name": "authenticated can delete own reviews",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"reviews\".\"profile_id\" = auth.uid()"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
@@ -1138,7 +1622,45 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "authenticated can select own shipping": {
+          "name": "authenticated can select own shipping",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"shipping\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can insert own shipping": {
+          "name": "authenticated can insert own shipping",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"shipping\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can update own shipping": {
+          "name": "authenticated can update own shipping",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"shipping\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())",
+          "withCheck": "\"shipping\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        },
+        "authenticated can delete own shipping": {
+          "name": "authenticated can delete own shipping",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"shipping\".\"order_id\" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     }
@@ -1185,7 +1707,14 @@
   },
   "schemas": {},
   "sequences": {},
-  "roles": {},
+  "roles": {
+    "admin": {
+      "name": "admin",
+      "createDb": false,
+      "createRole": false,
+      "inherit": true
+    }
+  },
   "policies": {},
   "views": {},
   "_meta": {
