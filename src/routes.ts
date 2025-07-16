@@ -10,8 +10,8 @@ export default [
   route("about", "features/about/pages/about-page.tsx"),
   route("shop", "features/shop/pages/shop-page.tsx"),
   ...prefix("product", [
-    route("registration","features/shop/pages/product-registration-page.tsx" ),
-    route("detail", "features/shop/pages/product-detail-page.tsx")
+    route("registration", "features/shop/pages/product-registration-page.tsx"),
+    route("detail", "features/shop/pages/product-detail-page.tsx"),
   ]),
   ...prefix("class", [
     index("features/class/pages/class-redirect-page.tsx"),
@@ -23,8 +23,7 @@ export default [
     route("/login", "features/auth/pages/login-page.tsx"),
     route("/signup", "features/auth/pages/signup-page.tsx"),
     route("/logout", "features/auth/pages/logout-page.tsx"),
+    route("/generate-test-user", "features/auth/pages/generate-test-user.tsx"),
   ]),
-  ...prefix("my", [
-    route("history", "features/my/pages/history-page.tsx"),
-  ])
+  ...prefix("my", [route("history", "features/my/pages/history-page.tsx")]),
 ] satisfies RouteConfig;
