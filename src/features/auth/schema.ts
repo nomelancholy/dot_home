@@ -68,6 +68,11 @@ export const profiles = pgTable(
       to: authenticatedRole,
       using: sql`${table.profile_id} = auth.uid()`,
     }),
+    pgPolicy("service can insert any profile", {
+      for: "insert",
+      to: serviceRole,
+      withCheck: sql`true`,
+    }),
   ]
 );
 

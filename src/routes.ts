@@ -24,6 +24,7 @@ export default [
     route("/signup", "features/auth/pages/signup-page.tsx"),
     route("/logout", "features/auth/pages/logout-page.tsx"),
     route("/generate-test-user", "features/auth/pages/generate-test-user.tsx"),
+    route("/welcome", "common/pages/welcome-page.tsx"),
   ]),
   ...prefix("my", [route("history", "features/my/pages/history-page.tsx")]),
 ] satisfies RouteConfig;

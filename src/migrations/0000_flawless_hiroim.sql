@@ -177,6 +177,7 @@ CREATE POLICY "authenticated can select own profile" ON "profiles" AS PERMISSIVE
 CREATE POLICY "authenticated can update own profile except role" ON "profiles" AS PERMISSIVE FOR UPDATE TO "authenticated" USING ("profiles"."profile_id" = auth.uid() AND "profiles"."role" = 'user') WITH CHECK ("profiles"."profile_id" = auth.uid() AND "profiles"."role" = 'user');--> statement-breakpoint
 CREATE POLICY "only admin can update role" ON "profiles" AS PERMISSIVE FOR UPDATE TO "admin" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "authenticated can delete own profile" ON "profiles" AS PERMISSIVE FOR DELETE TO "authenticated" USING ("profiles"."profile_id" = auth.uid());--> statement-breakpoint
+CREATE POLICY "service can insert any profile" ON "profiles" AS PERMISSIVE FOR INSERT TO "service_role" WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "authenticated can select own cart" ON "cart" AS PERMISSIVE FOR SELECT TO "authenticated" USING ("cart"."user_id" = auth.uid());--> statement-breakpoint
 CREATE POLICY "authenticated can insert own cart" ON "cart" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK ("cart"."user_id" = auth.uid());--> statement-breakpoint
 CREATE POLICY "authenticated can update own cart" ON "cart" AS PERMISSIVE FOR UPDATE TO "authenticated" USING ("cart"."user_id" = auth.uid()) WITH CHECK ("cart"."user_id" = auth.uid());--> statement-breakpoint

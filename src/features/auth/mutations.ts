@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { formSchema } from "./pages/signup-page";
-import type { Database } from "@/supa-client";
+import type { Database, supabaseAdmin } from "@/supa-client";
 
 interface ProfileInsert {
   profile_id: string;

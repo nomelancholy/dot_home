@@ -3,7 +3,7 @@ import { Button } from "src/common/components/ui/button";
 import { Form, Link, redirect, useNavigation } from "react-router";
 import { z } from "zod";
 import type { Route } from "./+types/signup-page";
-import { makeSSRClient } from "@/supa-client";
+import { makeSSRClient, supabaseAdmin } from "@/supa-client";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { createAddress, createProfile } from "../mutations";
 import {
@@ -77,7 +77,20 @@ export const formSchema = z
   .object({
     name: z.string().min(2),
     email: z.string().email(),
-    password: z.string().min(8),
+    password: z
+      .string()
+      .min(8, "비밀번호는 최소 8자 이상이어야 합니다.")
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/,
+        "영문, 숫자, 특수문자를 모두 포함해야 합니다."
+      )
+      .refine(
+        (val) =>
+          !["12345678", "password", "qwerty", "11111111", "00000000"].includes(
+            val.toLowerCase()
+          ),
+        { message: "너무 쉬운 비밀번호는 사용할 수 없습니다." }
+      ),
     confirm: z.string().min(8),
     phone: z.string().regex(/^\d{3}-\d{3,4}-\d{4}$/),
     zipCode: z.string().min(1),
@@ -142,7 +155,13 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { data: signupData, error: signupError } = await client.auth.signUp({
     email: email,
     password: password,
+    options: {
+      emailRedirectTo: "http://dayoff.today",
+    },
   });
+
+  console.log("signupData :>> ", signupData);
+  console.log("signupError :>> ", signupError);
 
   if (!signupData.user) {
     return {
@@ -151,42 +170,42 @@ export const action = async ({ request }: Route.ActionArgs) => {
     };
   }
 
-  console.log("client :>> ", client);
-  console.log("signupData :>> ", signupData);
-
-  console.log("signupError :>> ", signupError);
-  await createProfile(client, {
-    profile_id: signupData.user.id as string,
-    name: name,
-    phone: phone,
-    email: email,
-    email_consent: emailConsent,
-    phone_consent: phoneConsent,
-    agree_terms: agreeTerms,
-    agree_privacy: agreePrivacy,
-  });
-  if (signupError) {
+  try {
+    await createProfile(supabaseAdmin, {
+      profile_id: signupData.user.id as string,
+      name: name,
+      phone: phone,
+      email: email,
+      email_consent: emailConsent,
+      phone_consent: phoneConsent,
+      agree_terms: agreeTerms,
+      agree_privacy: agreePrivacy,
+    });
+    // 주소 입력은 로그인 후에만 허용하는 것이 안전하지만, 아래는 예시로 남깁니다.
+    await createAddress(client, {
+      profile_id: signupData.user.id as string,
+      address_name: "기본 주소",
+      address: address1 + " " + address2,
+      zipcode: zipCode,
+    });
+  } catch (err: any) {
+    // profile 또는 address insert 중 에러 발생 시 유저 롤백
+    await supabaseAdmin.auth.admin.deleteUser(signupData.user.id as string);
     return {
-      signupError: signupError.message,
+      signupError:
+        "회원가입 중 오류가 발생하여 가입이 취소되었습니다. 다시 시도해 주세요.",
       formErrors: null,
     };
   }
 
-  await createAddress(client, {
-    profile_id: signupData.user.id as string,
-    address_name: "기본 주소",
-    address: address1 + " " + address2,
-    zipcode: zipCode,
-  });
+  // 회원가입 성공 후 토큰을 URL 파라미터로 전달
+  const welcomeUrl = `/auth/welcome?email=${encodeURIComponent(
+    email
+  )}&access_token=${signupData.session?.access_token}&refresh_token=${
+    signupData.session?.refresh_token
+  }`;
 
-  // 3. 유저 생성 실패 시 롤백
-  // 만약 profile/address insert에서 에러가 발생하면, 이미 생성된 유저를 삭제해야 합니다.
-  // Supabase에서는 auth.admin.deleteUser(userId)로 유저 삭제가 가능합니다.
-  // (이 기능은 서비스 역할 키가 필요합니다.)
-
-  return redirect("/", {
-    headers,
-  });
+  return redirect(welcomeUrl);
 };
 
 function formatPhone(value: string) {
@@ -291,6 +310,20 @@ export default function SignupPage({ actionData }: Route.ComponentProps) {
           required
           className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
         />
+        <div className="text-xs text-gray-500 mt-1">
+          영문/숫자/특수문자를 포함하여 8자 이상이어야 합니다
+        </div>
+        {actionData?.formErrors?.password &&
+          actionData.formErrors.password[0] !==
+            "비밀번호가 일치하지 않습니다." && (
+            <div className="text-red-500 text-xs">
+              {actionData.formErrors.password[0]}
+            </div>
+          )}
+        {/* 프론트엔드에서 규칙 위반 에러가 있다면 표시 (불일치 메시지는 제외) */}
+        {passwordError && passwordError !== "비밀번호가 일치하지 않습니다." && (
+          <div className="text-red-500 text-xs">{passwordError}</div>
+        )}
         <input
           name="confirm"
           type="password"
@@ -300,8 +333,15 @@ export default function SignupPage({ actionData }: Route.ComponentProps) {
           required
           className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
         />
-        {passwordError && (
-          <div className="text-red-500 text-xs">{passwordError}</div>
+        {/* 비밀번호가 일치하지 않습니다 메시지는 확인란 아래에서만 표시 */}
+        {(actionData?.formErrors?.confirm ||
+          passwordError === "비밀번호가 일치하지 않습니다.") && (
+          <div className="text-red-500 text-xs">
+            {actionData?.formErrors?.confirm?.[0] ||
+              (passwordError === "비밀번호가 일치하지 않습니다."
+                ? passwordError
+                : null)}
+          </div>
         )}
         <input
           name="name"
@@ -489,7 +529,11 @@ export default function SignupPage({ actionData }: Route.ComponentProps) {
             </PopoverContent>
           </Popover>
         </div>
-        <Button type="submit" className="w-full" disabled={!isFormValid}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!isFormValid || isSubmitting}
+        >
           회원가입
         </Button>
         <div className="text-center text-sm">

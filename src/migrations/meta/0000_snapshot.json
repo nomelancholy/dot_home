@@ -1,5 +1,5 @@
 {
-  "id": "36d742f9-538a-4acd-9e06-47faa87101cd",
+  "id": "36bc2d24-9ebf-4fe0-ba69-faaee5bef621",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -253,6 +253,15 @@
             "authenticated"
           ],
           "using": "\"profiles\".\"profile_id\" = auth.uid()"
+        },
+        "service can insert any profile": {
+          "name": "service can insert any profile",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "service_role"
+          ],
+          "withCheck": "true"
         }
       },
       "checkConstraints": {},
