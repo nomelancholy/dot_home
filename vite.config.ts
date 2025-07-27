@@ -11,4 +11,19 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    sourcemap: false,
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // sourcemap 관련 경고 무시
+        if (warning.code === "SOURCEMAP_ERROR") {
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
+  esbuild: {
+    sourcemap: false,
+  },
 });
