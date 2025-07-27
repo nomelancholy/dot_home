@@ -4,7 +4,6 @@ import {
   boolean,
   integer,
   numeric,
-  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -13,7 +12,7 @@ import {
   pgPolicy,
 } from "drizzle-orm/pg-core";
 
-import { authenticatedRole, serviceRole } from "drizzle-orm/supabase";
+import { authenticatedRole } from "drizzle-orm/supabase";
 
 import { sql } from "drizzle-orm";
 
@@ -50,26 +49,33 @@ export const categories = pgTable(
     updated_at: timestamp().notNull().defaultNow(),
   },
   (table) => [
+    // 모두 조회 가능
     pgPolicy("public can select categories", {
       for: "select",
       to: "public",
       using: sql`true`,
     }),
+
+    // admin만 등록 가능
     pgPolicy("admin can insert categories", {
       for: "insert",
-      to: "admin",
-      withCheck: sql`auth.role() = 'admin'`,
+      to: authenticatedRole,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
+
+    // admin만 수정 가능
     pgPolicy("admin can update categories", {
       for: "update",
-      to: "admin",
-      using: sql`auth.role() = 'admin'`,
-      withCheck: sql`auth.role() = 'admin'`,
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
+
+    // admin만 삭제 가능
     pgPolicy("admin can delete categories", {
       for: "delete",
-      to: "admin",
-      using: sql`auth.role() = 'admin'`,
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
   ]
 );
@@ -88,111 +94,36 @@ export const products = pgTable(
     stock: integer("stock").notNull().default(0),
     price: numeric("price", { precision: 10, scale: 2 }).notNull(),
     thumbnail_url: text().notNull(),
+    product_image_1: text().notNull(),
+    product_image_2: text(),
+    product_image_3: text(),
+    product_image_4: text(),
+    product_image_5: text(),
     description: text().notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
-    // 모두 조회 가능
     pgPolicy("public can select products", {
       for: "select",
       to: "public",
       using: sql`true`,
     }),
-    // admin만 등록/수정/삭제 가능
     pgPolicy("admin can insert products", {
       for: "insert",
-      to: "admin",
-      withCheck: sql`auth.role() = 'admin'`,
+      to: authenticatedRole,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
     pgPolicy("admin can update products", {
       for: "update",
-      to: "admin",
-      using: sql`auth.role() = 'admin'`,
-      withCheck: sql`auth.role() = 'admin'`,
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
     pgPolicy("admin can delete products", {
       for: "delete",
-      to: "admin",
-      using: sql`auth.role() = 'admin'`,
-    }),
-  ]
-);
-
-export const product_images = pgTable(
-  "product_images",
-  {
-    product_image_id: bigint({ mode: "number" })
-      .primaryKey()
-      .generatedAlwaysAsIdentity(),
-    product_id: bigint({ mode: "number" }).references(
-      () => products.product_id,
-      {
-        onDelete: "cascade",
-      }
-    ),
-    image_url: text().notNull(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  },
-  (table) => [
-    pgPolicy("public can select product_images", {
-      for: "select",
-      to: "public",
-      using: sql`true`,
-    }),
-    pgPolicy("admin can insert product_images", {
-      for: "insert",
-      to: "admin",
-      withCheck: sql`auth.role() = 'admin'`,
-    }),
-    pgPolicy("admin can update product_images", {
-      for: "update",
-      to: "admin",
-      using: sql`auth.role() = 'admin'`,
-      withCheck: sql`auth.role() = 'admin'`,
-    }),
-    pgPolicy("admin can delete product_images", {
-      for: "delete",
-      to: "admin",
-      using: sql`auth.role() = 'admin'`,
-    }),
-  ]
-);
-
-// Cart
-export const cart = pgTable(
-  "cart",
-  {
-    cart_id: bigint({ mode: "number" })
-      .primaryKey()
-      .generatedAlwaysAsIdentity(),
-    user_id: uuid("user_id")
-      .references(() => profiles.profile_id, { onDelete: "cascade" })
-      .notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-  },
-  (table) => [
-    pgPolicy("authenticated can select own cart", {
-      for: "select",
       to: authenticatedRole,
-      using: sql`${table.user_id} = auth.uid()`,
-    }),
-    pgPolicy("authenticated can insert own cart", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: sql`${table.user_id} = auth.uid()`,
-    }),
-    pgPolicy("authenticated can update own cart", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`${table.user_id} = auth.uid()`,
-      withCheck: sql`${table.user_id} = auth.uid()`,
-    }),
-    pgPolicy("authenticated can delete own cart", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${table.user_id} = auth.uid()`,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
   ]
 );
@@ -204,7 +135,7 @@ export const cartItems = pgTable(
     cart_item_id: bigint({ mode: "number" })
       .primaryKey()
       .generatedAlwaysAsIdentity(),
-    cart_id: bigint({ mode: "number" }).references(() => cart.cart_id, {
+    profile_id: uuid("profile_id").references(() => profiles.profile_id, {
       onDelete: "cascade",
     }),
     product_id: bigint({ mode: "number" })
@@ -213,26 +144,26 @@ export const cartItems = pgTable(
     quantity: integer("quantity").notNull(),
   },
   (table) => [
-    pgPolicy("authenticated can select own cart items", {
+    pgPolicy("authenticated can select cart items", {
       for: "select",
       to: authenticatedRole,
-      using: sql`${table.cart_id} IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())`,
+      using: sql`${table.profile_id} = auth.uid()`,
     }),
-    pgPolicy("authenticated can insert own cart items", {
+    pgPolicy("authenticated can insert cart items", {
       for: "insert",
       to: authenticatedRole,
-      withCheck: sql`${table.cart_id} IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())`,
+      withCheck: sql`${table.profile_id} = auth.uid()`,
     }),
-    pgPolicy("authenticated can update own cart items", {
+    pgPolicy("authenticated can update cart items", {
       for: "update",
       to: authenticatedRole,
-      using: sql`${table.cart_id} IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())`,
-      withCheck: sql`${table.cart_id} IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())`,
+      using: sql`${table.profile_id} = auth.uid()`,
+      withCheck: sql`${table.profile_id} = auth.uid()`,
     }),
-    pgPolicy("authenticated can delete own cart items", {
+    pgPolicy("authenticated can delete cart items", {
       for: "delete",
       to: authenticatedRole,
-      using: sql`${table.cart_id} IN (SELECT cart_id FROM cart WHERE user_id = auth.uid())`,
+      using: sql`${table.profile_id} = auth.uid()`,
     }),
   ]
 );
@@ -257,23 +188,23 @@ export const orders = pgTable(
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
-    pgPolicy("authenticated can select own orders", {
+    pgPolicy("authenticated can select orders", {
       for: "select",
       to: authenticatedRole,
       using: sql`${table.profile_id} = auth.uid()`,
     }),
-    pgPolicy("authenticated can insert own orders", {
+    pgPolicy("authenticated can insert orders", {
       for: "insert",
       to: authenticatedRole,
       withCheck: sql`${table.profile_id} = auth.uid()`,
     }),
-    pgPolicy("authenticated can update own orders", {
+    pgPolicy("authenticated can update orders", {
       for: "update",
       to: authenticatedRole,
       using: sql`${table.profile_id} = auth.uid()`,
       withCheck: sql`${table.profile_id} = auth.uid()`,
     }),
-    pgPolicy("authenticated can delete own orders", {
+    pgPolicy("authenticated can delete orders", {
       for: "delete",
       to: authenticatedRole,
       using: sql`${table.profile_id} = auth.uid()`,
@@ -298,26 +229,36 @@ export const orderItems = pgTable(
     price: numeric("price", { precision: 10, scale: 2 }),
   },
   (table) => [
-    pgPolicy("authenticated can select own order items", {
+    pgPolicy("authenticated can select order items", {
       for: "select",
       to: authenticatedRole,
       using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
     }),
-    pgPolicy("authenticated can insert own order items", {
+    pgPolicy("admin can select order items", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+    pgPolicy("authenticated can insert order items", {
       for: "insert",
       to: authenticatedRole,
       withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
     }),
-    pgPolicy("authenticated can update own order items", {
+    pgPolicy("authenticated can update order items", {
       for: "update",
       to: authenticatedRole,
       using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
       withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
     }),
-    pgPolicy("authenticated can delete own order items", {
+    pgPolicy("authenticated can delete order items", {
       for: "delete",
       to: authenticatedRole,
       using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
+    }),
+    pgPolicy("admin can delete order items", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
   ]
 );
@@ -334,151 +275,25 @@ export const orderCancellations = pgTable(
     approved: boolean("approved").default(false),
   },
   (table) => [
-    pgPolicy("authenticated can select own order cancellations", {
+    pgPolicy("authenticated can select order cancellations", {
       for: "select",
       to: authenticatedRole,
       using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
     }),
-    pgPolicy("authenticated can insert own order cancellations", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-    }),
-    pgPolicy("authenticated can update own order cancellations", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-      withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-    }),
-    pgPolicy("authenticated can delete own order cancellations", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-    }),
-  ]
-);
-
-// Refunds
-export const orderRefunds = pgTable(
-  "order_refunds",
-  {
-    refund_id: bigint({ mode: "number" })
-      .primaryKey()
-      .generatedAlwaysAsIdentity(),
-    payment_id: bigint({ mode: "number" }).references(
-      () => payments.payment_id,
-      {
-        onDelete: "cascade",
-      }
-    ),
-    reason: text("reason"),
-    refundedAt: timestamp("refunded_at"),
-    amount: numeric("amount", { precision: 10, scale: 2 }),
-  },
-  (table) => [
-    pgPolicy("authenticated can select own order refunds", {
+    pgPolicy("admin can select order cancellations", {
       for: "select",
       to: authenticatedRole,
-      using: sql`${table.payment_id} IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))`,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
-    pgPolicy("authenticated can insert own order refunds", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: sql`${table.payment_id} IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))`,
-    }),
-    pgPolicy("authenticated can update own order refunds", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`${table.payment_id} IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))`,
-      withCheck: sql`${table.payment_id} IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))`,
-    }),
-    pgPolicy("authenticated can delete own order refunds", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${table.payment_id} IN (SELECT payment_id FROM payments WHERE order_id IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()))`,
-    }),
-  ]
-);
-
-// Shipping
-export const shipping = pgTable(
-  "shipping",
-  {
-    shipping_id: bigint({ mode: "number" })
-      .primaryKey()
-      .generatedAlwaysAsIdentity(),
-    order_id: bigint({ mode: "number" }).references(() => orders.order_id, {
-      onDelete: "cascade",
-    }),
-    shippedAt: timestamp("shipped_at"),
-    deliveredAt: timestamp("delivered_at"),
-  },
-  (table) => [
-    pgPolicy("authenticated can select own shipping", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-    }),
-    pgPolicy("authenticated can insert own shipping", {
+    pgPolicy("authenticated can insert order cancellations", {
       for: "insert",
       to: authenticatedRole,
       withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
     }),
-    pgPolicy("authenticated can update own shipping", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-      withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-    }),
-    pgPolicy("authenticated can delete own shipping", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-    }),
-  ]
-);
-
-export const reviews = pgTable(
-  "reviews",
-  {
-    review_id: bigint({ mode: "number" })
-      .primaryKey()
-      .generatedAlwaysAsIdentity(),
-    profile_id: uuid().references(() => profiles.profile_id, {
-      onDelete: "cascade",
-    }),
-    product_id: bigint({ mode: "number" }).references(
-      () => products.product_id,
-      {
-        onDelete: "cascade",
-      }
-    ),
-    rating: integer().notNull(),
-    comment: text().notNull(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  },
-  (table) => [
-    pgPolicy("authenticated can select own reviews", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`${table.profile_id} = auth.uid()`,
-    }),
-    pgPolicy("authenticated can insert own reviews", {
+    pgPolicy("admin can insert order cancellations", {
       for: "insert",
       to: authenticatedRole,
-      withCheck: sql`${table.profile_id} = auth.uid()`,
-    }),
-    pgPolicy("authenticated can update own reviews", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`${table.profile_id} = auth.uid()`,
-      withCheck: sql`${table.profile_id} = auth.uid()`,
-    }),
-    pgPolicy("authenticated can delete own reviews", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${table.profile_id} = auth.uid()`,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
   ]
 );
@@ -514,26 +329,158 @@ export const payments = pgTable(
     requestedAt: timestamp("requested_at").defaultNow(),
   },
   (table) => [
-    pgPolicy("authenticated can select own payments", {
+    pgPolicy("authenticated can select payments", {
       for: "select",
       to: authenticatedRole,
       using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
     }),
-    pgPolicy("authenticated can insert own payments", {
+    pgPolicy("admin can select payments", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+    pgPolicy("authenticated can insert payments", {
       for: "insert",
       to: authenticatedRole,
       withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
     }),
-    pgPolicy("authenticated can update own payments", {
+  ]
+);
+
+// Refunds
+export const orderRefunds = pgTable(
+  "order_refunds",
+  {
+    refund_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    order_id: bigint({ mode: "number" }).references(() => orders.order_id, {
+      onDelete: "cascade",
+    }),
+    payment_id: bigint({ mode: "number" }).references(
+      () => payments.payment_id,
+      {
+        onDelete: "cascade",
+      }
+    ),
+    reason: text("reason"),
+    refundedAt: timestamp("refunded_at"),
+    amount: numeric("amount", { precision: 10, scale: 2 }),
+  },
+  (table) => [
+    pgPolicy("authenticated can select order refunds", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
+    }),
+    pgPolicy("admin can select order refunds", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+    pgPolicy("admin can insert order refunds", {
+      for: "insert",
+      to: authenticatedRole,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+    pgPolicy("admin can update order refunds", {
       for: "update",
       to: authenticatedRole,
-      using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
-      withCheck: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
-    pgPolicy("authenticated can delete own payments", {
-      for: "delete",
+  ]
+);
+
+// Shipping
+export const shipping = pgTable(
+  "shipping",
+  {
+    shipping_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    order_id: bigint({ mode: "number" }).references(() => orders.order_id, {
+      onDelete: "cascade",
+    }),
+    shippedAt: timestamp("shipped_at"),
+    deliveredAt: timestamp("delivered_at"),
+  },
+  (table) => [
+    pgPolicy("authenticated can select shipping", {
+      for: "select",
       to: authenticatedRole,
       using: sql`${table.order_id} IN (SELECT order_id FROM orders WHERE profile_id = auth.uid())`,
+    }),
+    pgPolicy("admin can select shipping", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+    pgPolicy("admin can insert shipping", {
+      for: "insert",
+      to: authenticatedRole,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+    pgPolicy("admin can update shipping", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+      withCheck: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+    pgPolicy("admin can delete shipping", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
+    }),
+  ]
+);
+
+export const reviews = pgTable(
+  "reviews",
+  {
+    review_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    profile_id: uuid().references(() => profiles.profile_id, {
+      onDelete: "cascade",
+    }),
+    product_id: bigint({ mode: "number" }).references(
+      () => products.product_id,
+      {
+        onDelete: "cascade",
+      }
+    ),
+    rating: integer().notNull(),
+    comment: text().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [
+    pgPolicy("public can select reviews", {
+      for: "select",
+      to: "public",
+      using: sql`true`,
+    }),
+    pgPolicy("authenticated can insert reviews", {
+      for: "insert",
+      to: authenticatedRole,
+      withCheck: sql`${table.profile_id} = auth.uid()`,
+    }),
+    pgPolicy("authenticated can update reviews", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`${table.profile_id} = auth.uid()`,
+      withCheck: sql`${table.profile_id} = auth.uid()`,
+    }),
+    pgPolicy("authenticated can delete reviews", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`${table.profile_id} = auth.uid()`,
+    }),
+    pgPolicy("admin can delete reviews", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
   ]
 );

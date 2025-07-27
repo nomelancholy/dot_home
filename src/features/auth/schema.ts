@@ -16,12 +16,9 @@ import { sql } from "drizzle-orm";
 import { authenticatedRole, serviceRole } from "drizzle-orm/supabase";
 import { pgPolicy } from "drizzle-orm/pg-core";
 
-export const adminRole = pgRole("admin");
-
 const users = pgSchema("auth").table("users", {
   id: uuid("id").primaryKey(),
 });
-
 export const roles = pgEnum("role", ["admin", "user"]);
 
 export const profiles = pgTable(
@@ -30,14 +27,9 @@ export const profiles = pgTable(
     profile_id: uuid()
       .primaryKey()
       .references(() => users.id, { onDelete: "cascade" }),
-    name: text().notNull(),
-    phone: text().notNull(),
+    username: text().notNull().unique(),
     email: text("").notNull().unique(),
-    role: roles().default("user").notNull(),
-    email_consent: boolean().notNull(),
-    phone_consent: boolean().notNull(),
-    agree_terms: boolean().notNull(),
-    agree_privacy: boolean().notNull(),
+    role: roles().notNull().default("user"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -48,6 +40,21 @@ export const profiles = pgTable(
       to: authenticatedRole,
       using: sql`${table.profile_id} = auth.uid()`,
     }),
+
+    // 회원가입 시 중복 검사를 위해 public이 username과 email 조회 가능
+    pgPolicy("public can select username and email for signup check", {
+      for: "select",
+      to: "public",
+      using: sql`true`,
+    }),
+
+    // 트리거가 새 사용자 프로필을 생성할 수 있도록 service_role에 INSERT 권한 부여
+    pgPolicy("service can insert profiles", {
+      for: "insert",
+      to: serviceRole,
+      withCheck: sql`true`,
+    }),
+
     // 본인만 수정 (role은 항상 'user'여야 함)
     pgPolicy("authenticated can update own profile except role", {
       for: "update",
@@ -55,23 +62,20 @@ export const profiles = pgTable(
       using: sql`${table.profile_id} = auth.uid() AND ${table.role} = 'user'`,
       withCheck: sql`${table.profile_id} = auth.uid() AND ${table.role} = 'user'`,
     }),
-    // admin만 role 변경 가능
-    pgPolicy("only admin can update role", {
+
+    // service_role만 role 변경 가능
+    pgPolicy("service can update role", {
       for: "update",
-      to: adminRole,
+      to: serviceRole,
       using: sql`true`,
       withCheck: sql`true`,
     }),
+
     // 본인만 삭제
     pgPolicy("authenticated can delete own profile", {
       for: "delete",
       to: authenticatedRole,
       using: sql`${table.profile_id} = auth.uid()`,
-    }),
-    pgPolicy("service can insert any profile", {
-      for: "insert",
-      to: serviceRole,
-      withCheck: sql`true`,
     }),
   ]
 );
@@ -83,34 +87,39 @@ export const addresses = pgTable(
     profile_id: uuid().references(() => profiles.profile_id, {
       onDelete: "cascade",
     }),
-    address_name: text().notNull(),
-    address: text().notNull(),
+    address_name: text().notNull(), // 배송지 이름 (예: "집", "회사")
+    recipient_name: text().notNull(), // 수령자 이름
+    recipient_phone: text().notNull(), // 수령자 전화번호
+    address: text().notNull(), // 주소
     zipcode: varchar("zipcode", { length: 10 }).notNull(),
     isDefault: boolean("is_default").default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
-    // 본인만 조회/수정/삭제
-    pgPolicy("authenticated can select own address", {
+    pgPolicy("authenticated can select addresses", {
       for: "select",
       to: authenticatedRole,
       using: sql`${table.profile_id} = auth.uid()`,
     }),
-    pgPolicy("authenticated can update own address", {
-      for: "update",
+    pgPolicy("admin can select addresses", {
+      for: "select",
       to: authenticatedRole,
-      using: sql`${table.profile_id} = auth.uid()`,
-      withCheck: sql`${table.profile_id} = auth.uid()`,
+      using: sql`EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')`,
     }),
-    pgPolicy("authenticated can delete own address", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${table.profile_id} = auth.uid()`,
-    }),
-    pgPolicy("authenticated can insert own address", {
+    pgPolicy("authenticated can insert addresses", {
       for: "insert",
       to: authenticatedRole,
       withCheck: sql`${table.profile_id} = auth.uid()`,
+    }),
+    pgPolicy("authenticated can update addresses", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`${table.profile_id} = auth.uid()`,
+    }),
+    pgPolicy("authenticated can delete addresses", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`${table.profile_id} = auth.uid()`,
     }),
   ]
 );
