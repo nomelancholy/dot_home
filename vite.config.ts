@@ -30,4 +30,15 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["@react-email/components"],
   },
+  server: {
+    fs: {
+      allow: [".."],
+    },
+  },
+  define: {
+    __EXCLUDE_REACT_EMAIL__: JSON.stringify(true),
+  },
+  ssr: {
+    noExternal: ["@react-email/components"],
+  },
 });

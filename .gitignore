@@ -6,3 +6,6 @@
 /build/
 
 .env
+
+# React Email Starter (separate project)
+/react-email-starter/

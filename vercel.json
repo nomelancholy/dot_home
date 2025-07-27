@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "build/server/index.js": {
+      "maxDuration": 30
+    }
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "framework": "react-router",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

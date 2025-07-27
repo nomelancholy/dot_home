@@ -9,6 +9,10 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database as SupabaseDatabase } from "database.types";
 import type { MergeDeep } from "type-fest";
 
+// 환경 변수 로드
+import dotenv from "dotenv";
+dotenv.config();
+
 export type Database = MergeDeep<
   SupabaseDatabase,
   {
@@ -18,26 +22,33 @@ export type Database = MergeDeep<
   }
 >;
 
-export const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// 환경 변수를 안전하게 가져오는 함수
+function getEnvVar(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Environment variable ${name} is required but not set`);
+  }
+  return value;
+}
 
-export const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+const supabaseUrl = getEnvVar("SUPABASE_URL");
+const supabaseAnonKey = getEnvVar("SUPABASE_ANON_KEY");
+const supabaseServiceRoleKey = getEnvVar("SUPABASE_SERVICE_ROLE_KEY");
+
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const browserClient = createBrowserClient<Database>(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
+  supabaseUrl,
+  supabaseAnonKey
 );
 
 export const makeSSRClient = (request: Request) => {
   const headers = new Headers();
   const serverSideClient = createServerClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
