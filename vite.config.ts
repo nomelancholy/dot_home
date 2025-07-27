@@ -21,9 +21,13 @@ export default defineConfig({
         }
         warn(warning);
       },
+      external: ["@react-email/components"],
     },
   },
   esbuild: {
     sourcemap: false,
+  },
+  optimizeDeps: {
+    exclude: ["@react-email/components"],
   },
 });
