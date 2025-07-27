@@ -61,7 +61,10 @@
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.24.0",
     "@esbuild/darwin-x64": "^0.24.0",
-    "@esbuild/linux-x64": "^0.24.0"
+    "@esbuild/linux-x64": "^0.24.0",
+    "lightningcss-darwin-arm64": "^1.25.0",
+    "lightningcss-darwin-x64": "^1.25.0",
+    "lightningcss-linux-x64-gnu": "^1.25.0"
   },
   "devDependencies": {
     "@react-router/dev": "^7.5.3",
