@@ -39,12 +39,7 @@ export default function AboutPage() {
           className="bg-background w-full h-full object-contain rounded-2xl"
         />
       </BlurFade>
-      <SparklesText className="mt-20 text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
-        <span>{t("about_welcome")}</span>
-        <br />
-        <span>{t("about_title")}</span>
-        <br className="hidden md:block" />
-      </SparklesText>
+
       <TextReveal>{t("about_intro")}</TextReveal>
 
       <section id="photos">

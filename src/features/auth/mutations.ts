@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
-import type { formSchema } from "./pages/signup-page";
+import type { formSchema } from "./pages/email-signup-page";
 import type { Database, supabaseAdmin } from "@/supa-client";
 
 interface ProfileInsert {
@@ -25,8 +25,6 @@ export const createProfile = async (
   client: SupabaseClient<Database>,
   profile: ProfileInsert
 ) => {
-  console.log("signupData :>> ", profile);
-
   const { data: profileData, error } = await client
     .from("profiles")
     .insert({
@@ -49,7 +47,6 @@ export const createAddress = async (
   client: SupabaseClient<Database>,
   address: AddressInsert
 ) => {
-  console.log("address :>> ", address);
   const { data: addressData, error } = await client
     .from("addresses")
     .insert({
@@ -60,8 +57,6 @@ export const createAddress = async (
     })
     .select();
   if (error) {
-    console.log("addressData :>> ", addressData);
-    console.log("address error :>> ", error);
     throw error;
   }
 };

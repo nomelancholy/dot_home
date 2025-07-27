@@ -15,7 +15,6 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import type * as React from "react";
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
