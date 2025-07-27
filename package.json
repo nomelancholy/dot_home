@@ -11,7 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
-    "db:typegen": "supabase gen types typescript --project-id lkcakaojpugcwfripbom --schema public > database.types.ts"
+    "db:typegen": "supabase gen types typescript --project-id lkcakaojpugcwfripbom --schema public > database.types.ts",
+    "postinstall": "npm install rollup @rollup/plugin-node-resolve @rollup/plugin-commonjs"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
