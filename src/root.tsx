@@ -1,3 +1,4 @@
+import "@/lib/i18n";
 import {
   isRouteErrorResponse,
   Links,
@@ -11,10 +12,12 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import Navigation from "./common/components/navigation";
 import Footer from "./common/components/footer";
+import { makeSSRClient } from "./supa-client";
+import { Toaster } from "@/common/components/ui/sonner";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -29,15 +32,50 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <Toaster position="bottom-center" />
       </body>
     </html>
   );
 }
 
-export default function App() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+
+  let isAdmin = false;
+
+  if (user && user.id) {
+    const { data: profile } = await client
+      .from("profiles")
+      .select("*")
+      .eq("profile_id", user?.id ?? "")
+      .single();
+
+    if (profile?.role === "admin") {
+      isAdmin = true;
+    }
+
+    return { user, profile, isAdmin };
+  }
+
+  return { user: null, profile: null, isAdmin: false };
+};
+
+export default function App({ loaderData }: Route.ComponentProps) {
+  const { user, isAdmin } = loaderData;
+
+  const isLoggedIn = user !== null;
+
   return (
     <div className="min-h-screen flex flex-col pt-16 md:pt-20 px-4 md:px-10">
-      <Navigation />
+      <Navigation
+        isLoggedIn={isLoggedIn}
+        isAdmin={isAdmin}
+        name={user?.user_metadata?.name ?? ""}
+      />
       <Outlet />
       <Footer />
     </div>

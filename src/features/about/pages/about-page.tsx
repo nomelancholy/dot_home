@@ -2,8 +2,8 @@ import { BlurFade } from "@/common/components/ui/blur-fade";
 // import { TypingAnimation } from "@/common/components/ui/typing-animation";
 import { TextReveal } from "@/common/components/ui/text-reveal";
 import { SparklesText } from "@/common/components/ui/sparkles-text";
-import { cn } from "@/lib/utils";
 import type { Route } from "./+types/about-page";
+import { useTranslation } from "react-i18next";
 
 const images = [
   "1.jpg",
@@ -25,6 +25,7 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export default function AboutPage() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center">
       <BlurFade
@@ -38,17 +39,8 @@ export default function AboutPage() {
           className="bg-background w-full h-full object-contain rounded-2xl"
         />
       </BlurFade>
-      <SparklesText className="mt-20 text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
-        <span>어서오세요 :)</span>
-        <br />
-        <span>도자기 공방 DOT입니다.</span>
-        <br className="hidden md:block" />
-      </SparklesText>
-      <TextReveal>
-        {`DOT는 
-Day Off Today의 약자입니다.
-디오티 공간에서 편안히 쉬어가세요`}
-      </TextReveal>
+
+      <TextReveal>{t("about_intro")}</TextReveal>
 
       <section id="photos">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-7xl mx-auto">
