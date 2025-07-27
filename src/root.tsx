@@ -40,30 +40,40 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { client } = makeSSRClient(request);
+
   const {
     data: { user },
   } = await client.auth.getUser();
 
+  let isAdmin = false;
+
   if (user && user.id) {
-    return { user };
+    const { data: profile } = await client
+      .from("profiles")
+      .select("*")
+      .eq("profile_id", user?.id ?? "")
+      .single();
+
+    if (profile?.role === "admin") {
+      isAdmin = true;
+    }
+
+    return { user, profile, isAdmin };
   }
 
-  return { user: null };
+  return { user: null, profile: null, isAdmin: false };
 };
 
 export default function App({ loaderData }: Route.ComponentProps) {
-  const { user } = loaderData;
-
-  console.log("root user  :>> ", user);
+  const { user, isAdmin } = loaderData;
 
   const isLoggedIn = user !== null;
-
-  console.log("root isLoggedIn :>> ", isLoggedIn);
 
   return (
     <div className="min-h-screen flex flex-col pt-16 md:pt-20 px-4 md:px-10">
       <Navigation
         isLoggedIn={isLoggedIn}
+        isAdmin={isAdmin}
         name={user?.user_metadata?.name ?? ""}
       />
       <Outlet />

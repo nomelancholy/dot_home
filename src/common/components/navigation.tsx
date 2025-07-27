@@ -16,17 +16,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTranslation } from "react-i18next";
 
 export default function Navigation({
   isLoggedIn,
+  isAdmin,
   name,
 }: {
   isLoggedIn: boolean;
+  isAdmin: boolean;
   name: string;
 }) {
-  console.log("Navigation isLoggedIn :>> ", isLoggedIn);
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const { i18n } = useTranslation();
@@ -69,38 +69,6 @@ export default function Navigation({
       name: "Class",
       to: "/class",
     },
-    // {
-    //   name: "Shop",
-    //   to: "/shop",
-    //   items: [
-    //     {
-    //       name: "All",
-    //       to: "/shop",
-    //     },
-    //     {
-    //       name: "Cup",
-    //       to: "/shop?type=cup",
-    //     },
-    //     {
-    //       name: "Plate",
-    //       to: "/shop?type=plate",
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Class",
-    //   to: "/class",
-    //   items: [
-    //     {
-    //       name: "One Day Class",
-    //       to: "/class/one-day",
-    //     },
-    //     {
-    //       name: "Regular Class",
-    //       to: "/shop/regular",
-    //     },
-    //   ],
-    // },
     { name: "Contact", to: "/contact" },
   ];
 
@@ -191,7 +159,17 @@ export default function Navigation({
                     <User className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent>
+                  {isAdmin && (
+                    <DropdownMenuItem className="bg-primary text-primary-foreground">
+                      <Link to="/admin">관리자 페이지</Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem>
+                    <Link to="/my/profile">프로필</Link>
+                  </DropdownMenuItem>
+
                   <DropdownMenuItem>
                     <Link to="/auth/logout">로그아웃</Link>
                   </DropdownMenuItem>

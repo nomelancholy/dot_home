@@ -211,7 +211,7 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
               }
               description={t("class_pottery_desc")}
               href="https://m.booking.naver.com/booking/6/bizes/1177496/items/6731133?area=ple&lang=ko&tab=book&theme=place"
-              cta={t("class_cta")}
+              cta={t("pottery_wheel_class_cta")}
             ></BentoCard>
             <BentoCard
               className=""
@@ -225,7 +225,7 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
               }
               description={t("class_color_desc")}
               href="https://m.booking.naver.com/booking/6/bizes/1177496/items/6581778?area=bmp&lang=ko&service-target=map-pc&tab=book&theme=place"
-              cta={t("class_cta")}
+              cta={t("color_class_cta")}
             ></BentoCard>
             <BentoCard
               className=""
@@ -239,7 +239,7 @@ export default function ClassOneDayPage({ loaderData }: Route.ComponentProps) {
               }
               description={t("class_free_desc")}
               href="https://m.booking.naver.com/booking/6/bizes/1177496/items/5955427?area=ple&lang=ko&tab=book&theme=place"
-              cta={t("class_cta")}
+              cta={t("free_class_cta")}
             ></BentoCard>
           </BentoGrid>
         </div>
