@@ -39,6 +39,6 @@ export default defineConfig({
     __EXCLUDE_REACT_EMAIL__: JSON.stringify(true),
   },
   ssr: {
-    noExternal: ["@react-email/components"],
+    external: ["@react-email/components"],
   },
 });
