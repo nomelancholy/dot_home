@@ -208,4 +208,29 @@ CREATE POLICY "authenticated can select shipping" ON "shipping" AS PERMISSIVE FO
 CREATE POLICY "admin can select shipping" ON "shipping" AS PERMISSIVE FOR SELECT TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
 CREATE POLICY "admin can insert shipping" ON "shipping" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
 CREATE POLICY "admin can update shipping" ON "shipping" AS PERMISSIVE FOR UPDATE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')) WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
-CREATE POLICY "admin can delete shipping" ON "shipping" AS PERMISSIVE FOR DELETE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin can delete shipping" ON "shipping" AS PERMISSIVE FOR DELETE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
+
+-- Create trigger function for new user profile creation
+create or replace function handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+ -- create profile for the user 
+  if new.raw_user_meta_data is not null and new.raw_user_meta_data ? 'username' then
+    insert into public.profiles (profile_id, username, email, role)
+    values (new.id, new.raw_user_meta_data ->> 'username', new.email, 'user');
+  end if;
+  return new;
+end;
+$$;--> statement-breakpoint
+
+-- Create trigger
+drop trigger if exists user_to_profile_trigger on auth.users;
+
+create trigger user_to_profile_trigger
+after insert on auth.users
+for each row
+execute function handle_new_user();

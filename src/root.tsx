@@ -39,7 +39,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { client } = makeSSRClient(request);
+  const { client, headers } = makeSSRClient(request);
+
+  // OAuth 코드가 있는지 확인
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+
+  if (code) {
+    const { data: sessionData, error: exchangeError } =
+      await client.auth.exchangeCodeForSession(code);
+
+    if (exchangeError) {
+      throw new Error(exchangeError.message);
+    }
+
+    // 세션이 설정된 후 다시 사용자 정보 가져오기
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+
+    let isAdmin = false;
+
+    if (user && user.id) {
+      const { data: profile } = await client
+        .from("profiles")
+        .select("*")
+        .eq("profile_id", user?.id ?? "")
+        .single();
+
+      if (profile?.role === "admin") {
+        isAdmin = true;
+      }
+
+      return { user, profile, isAdmin, headers };
+    }
+
+    return { user: null, profile: null, isAdmin: false, headers };
+  }
 
   const {
     data: { user },
@@ -58,10 +94,10 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       isAdmin = true;
     }
 
-    return { user, profile, isAdmin };
+    return { user, profile, isAdmin, headers };
   }
 
-  return { user: null, profile: null, isAdmin: false };
+  return { user: null, profile: null, isAdmin: false, headers };
 };
 
 export default function App({ loaderData }: Route.ComponentProps) {

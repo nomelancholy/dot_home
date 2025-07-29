@@ -25,6 +25,10 @@ export default [
     route("/signup", "features/auth/pages/email-signup-page.tsx"),
     route("/logout", "features/auth/pages/logout-page.tsx"),
     route("/welcome", "common/pages/welcome-page.tsx"),
+    ...prefix("/social/:provider", [
+      route("/start", "features/auth/pages/social-start-page.tsx"),
+      route("/complete", "features/auth/pages/social-complete-page.tsx"),
+    ]),
   ]),
   ...prefix("admin", [
     index("features/admin/pages/admin-page.tsx"),

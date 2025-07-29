@@ -124,28 +124,26 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
         </div>
 
         <div className="space-y-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              // 카카오 로그인 로직
-              console.log("카카오 로그인");
-            }}
-          >
-            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-              <path
-                fill="currentColor"
-                d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z"
-              />
-            </svg>
-            카카오로 로그인하기
-          </Button>
+          <Link to="/auth/social/kakao/start">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full cursor-pointer"
+            >
+              <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z"
+                />
+              </svg>
+              카카오로 로그인하기
+            </Button>
+          </Link>
 
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full cursor-pointer"
             onClick={() => {
               // 구글 로그인 로직
               console.log("구글 로그인");
@@ -170,15 +168,15 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
               />
             </svg>
             Google로 로그인하기
-          </Button>
+          </Button> */}
         </div>
 
-        <div className="text-center text-sm">
+        {/* <div className="text-center text-sm">
           비밀번호를 잊어버리셨나요?{" "}
           <Link to="/auth/find-password" className="text-primary underline">
             비밀번호 찾기
           </Link>
-        </div>
+        </div> */}
         <div className="text-center text-sm">
           계정이 없으신가요?{" "}
           <Link to="/auth/signup-method" className="text-primary underline">
