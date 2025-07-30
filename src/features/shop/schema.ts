@@ -81,25 +81,35 @@ export const categories = pgTable(
 );
 
 export const products = pgTable(
-  "product",
+  "products",
   {
     product_id: bigint({ mode: "number" })
       .primaryKey()
       .generatedAlwaysAsIdentity(),
     name: text().notNull(),
+    unique_name: text().notNull().unique(),
     category_id: bigint({ mode: "number" }).references(
       () => categories.category_id,
       { onDelete: "set null" }
     ),
     stock: integer("stock").notNull().default(0),
     price: numeric("price", { precision: 10, scale: 2 }).notNull(),
-    thumbnail_url: text().notNull(),
     product_image_1: text().notNull(),
     product_image_2: text(),
     product_image_3: text(),
     product_image_4: text(),
     product_image_5: text(),
-    description: text().notNull(),
+    detail_page_image_1: text().notNull(),
+    detail_page_image_2: text(),
+    detail_page_image_3: text(),
+    detail_page_image_4: text(),
+    detail_page_image_5: text(),
+    purchase_link: text(),
+    description: text(),
+    detail: text(),
+    exchange_refund_policy: text(),
+    shipping_policy: text(),
+    caution: text(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

@@ -102,24 +102,35 @@ CREATE TABLE "payments" (
 );
 --> statement-breakpoint
 ALTER TABLE "payments" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
-CREATE TABLE "product" (
-	"product_id" bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "product_product_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1),
+CREATE TABLE "products" (
+	"product_id" bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "products_product_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1),
 	"name" text NOT NULL,
+	"unique_name" text NOT NULL,
 	"category_id" bigint,
 	"stock" integer DEFAULT 0 NOT NULL,
 	"price" numeric(10, 2) NOT NULL,
-	"thumbnail_url" text NOT NULL,
 	"product_image_1" text NOT NULL,
 	"product_image_2" text,
 	"product_image_3" text,
 	"product_image_4" text,
 	"product_image_5" text,
-	"description" text NOT NULL,
+	"detail_page_image_1" text NOT NULL,
+	"detail_page_image_2" text,
+	"detail_page_image_3" text,
+	"detail_page_image_4" text,
+	"detail_page_image_5" text,
+	"purchase_link" text,
+	"description" text,
+	"detail" text,
+	"exchange_refund_policy" text,
+	"shipping_policy" text,
+	"caution" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "products_unique_name_unique" UNIQUE("unique_name")
 );
 --> statement-breakpoint
-ALTER TABLE "product" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "products" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
 CREATE TABLE "reviews" (
 	"review_id" bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "reviews_review_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1),
 	"profile_id" uuid,
@@ -142,18 +153,18 @@ ALTER TABLE "shipping" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_profile_id_profiles_profile_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."profiles"("profile_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_profile_id_users_id_fk" FOREIGN KEY ("profile_id") REFERENCES "auth"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_profile_id_profiles_profile_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."profiles"("profile_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_product_id_product_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."product"("product_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_product_id_products_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("product_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order_cancellations" ADD CONSTRAINT "order_cancellations_order_id_orders_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("order_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order_items" ADD CONSTRAINT "order_items_order_id_orders_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("order_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "order_items" ADD CONSTRAINT "order_items_product_id_product_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."product"("product_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "order_items" ADD CONSTRAINT "order_items_product_id_products_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("product_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order_refunds" ADD CONSTRAINT "order_refunds_order_id_orders_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("order_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order_refunds" ADD CONSTRAINT "order_refunds_payment_id_payments_payment_id_fk" FOREIGN KEY ("payment_id") REFERENCES "public"."payments"("payment_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "orders" ADD CONSTRAINT "orders_profile_id_profiles_profile_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."profiles"("profile_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "orders" ADD CONSTRAINT "orders_address_id_addresses_address_id_fk" FOREIGN KEY ("address_id") REFERENCES "public"."addresses"("address_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payments" ADD CONSTRAINT "payments_order_id_orders_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("order_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "product" ADD CONSTRAINT "product_category_id_categories_category_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("category_id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "products" ADD CONSTRAINT "products_category_id_categories_category_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("category_id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_profile_id_profiles_profile_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."profiles"("profile_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "reviews" ADD CONSTRAINT "reviews_product_id_product_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."product"("product_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_product_id_products_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("product_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shipping" ADD CONSTRAINT "shipping_order_id_orders_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("order_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE POLICY "authenticated can select addresses" ON "addresses" AS PERMISSIVE FOR SELECT TO "authenticated" USING ("addresses"."profile_id" = auth.uid());--> statement-breakpoint
 CREATE POLICY "admin can select addresses" ON "addresses" AS PERMISSIVE FOR SELECT TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
@@ -195,10 +206,10 @@ CREATE POLICY "authenticated can delete orders" ON "orders" AS PERMISSIVE FOR DE
 CREATE POLICY "authenticated can select payments" ON "payments" AS PERMISSIVE FOR SELECT TO "authenticated" USING ("payments"."order_id" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()));--> statement-breakpoint
 CREATE POLICY "admin can select payments" ON "payments" AS PERMISSIVE FOR SELECT TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
 CREATE POLICY "authenticated can insert payments" ON "payments" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK ("payments"."order_id" IN (SELECT order_id FROM orders WHERE profile_id = auth.uid()));--> statement-breakpoint
-CREATE POLICY "public can select products" ON "product" AS PERMISSIVE FOR SELECT TO public USING (true);--> statement-breakpoint
-CREATE POLICY "admin can insert products" ON "product" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
-CREATE POLICY "admin can update products" ON "product" AS PERMISSIVE FOR UPDATE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')) WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
-CREATE POLICY "admin can delete products" ON "product" AS PERMISSIVE FOR DELETE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
+CREATE POLICY "public can select products" ON "products" AS PERMISSIVE FOR SELECT TO public USING (true);--> statement-breakpoint
+CREATE POLICY "admin can insert products" ON "products" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
+CREATE POLICY "admin can update products" ON "products" AS PERMISSIVE FOR UPDATE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')) WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
+CREATE POLICY "admin can delete products" ON "products" AS PERMISSIVE FOR DELETE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
 CREATE POLICY "public can select reviews" ON "reviews" AS PERMISSIVE FOR SELECT TO public USING (true);--> statement-breakpoint
 CREATE POLICY "authenticated can insert reviews" ON "reviews" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK ("reviews"."profile_id" = auth.uid());--> statement-breakpoint
 CREATE POLICY "authenticated can update reviews" ON "reviews" AS PERMISSIVE FOR UPDATE TO "authenticated" USING ("reviews"."profile_id" = auth.uid()) WITH CHECK ("reviews"."profile_id" = auth.uid());--> statement-breakpoint
@@ -208,29 +219,4 @@ CREATE POLICY "authenticated can select shipping" ON "shipping" AS PERMISSIVE FO
 CREATE POLICY "admin can select shipping" ON "shipping" AS PERMISSIVE FOR SELECT TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
 CREATE POLICY "admin can insert shipping" ON "shipping" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
 CREATE POLICY "admin can update shipping" ON "shipping" AS PERMISSIVE FOR UPDATE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin')) WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
-CREATE POLICY "admin can delete shipping" ON "shipping" AS PERMISSIVE FOR DELETE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));--> statement-breakpoint
-
--- Create trigger function for new user profile creation
-create or replace function handle_new_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = ''
-as $$
-begin
- -- create profile for the user 
-  if new.raw_user_meta_data is not null and new.raw_user_meta_data ? 'username' then
-    insert into public.profiles (profile_id, username, email, role)
-    values (new.id, new.raw_user_meta_data ->> 'username', new.email, 'user');
-  end if;
-  return new;
-end;
-$$;--> statement-breakpoint
-
--- Create trigger
-drop trigger if exists user_to_profile_trigger on auth.users;
-
-create trigger user_to_profile_trigger
-after insert on auth.users
-for each row
-execute function handle_new_user();
+CREATE POLICY "admin can delete shipping" ON "shipping" AS PERMISSIVE FOR DELETE TO "authenticated" USING (EXISTS (SELECT 1 FROM profiles WHERE profile_id = auth.uid() AND role = 'admin'));

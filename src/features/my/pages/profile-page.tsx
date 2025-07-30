@@ -9,12 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/common/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/common/components/ui/tabs";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { Badge } from "@/common/components/ui/badge";
@@ -55,16 +49,13 @@ export default function ProfilePage({
   actionData,
 }: Route.ComponentProps) {
   const { user, profile, orders, shippingAddresses } = loaderData || {};
-  const [activeTab, setActiveTab] = useState("profile");
 
   // 내 정보 관리 컴포넌트
   function ProfileManagement() {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
-      name: (profile as any)?.name || "",
       nickname: (profile as any)?.nickname || "",
       email: (user as any)?.email || "",
-      phone: (profile as any)?.phone || "",
     });
 
     function handleSubmit(e: React.FormEvent) {
@@ -78,7 +69,7 @@ export default function ProfilePage({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            내 정보 관리
+            내 정보
             <Button
               variant={isEditing ? "outline" : "default"}
               onClick={() => setIsEditing(!isEditing)}
@@ -87,23 +78,12 @@ export default function ProfilePage({
             </Button>
           </CardTitle>
           <CardDescription>
-            이름과 닉네임 등 가입 정보를 확인하고 수정할 수 있습니다.
+            닉네임 등 가입 정보를 확인하고 수정할 수 있습니다.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">이름</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
+          {isEditing ? (
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="nickname">닉네임</Label>
                 <Input
@@ -112,38 +92,38 @@ export default function ProfilePage({
                   onChange={(e) =>
                     setFormData({ ...formData, nickname: e.target.value })
                   }
-                  disabled={!isEditing}
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                disabled
-                className="bg-gray-50"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">전화번호</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                disabled={!isEditing}
-                placeholder="010-0000-0000"
-              />
-            </div>
-            {isEditing && (
+              <div className="space-y-2">
+                <Label htmlFor="email">이메일</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  disabled
+                  className="bg-gray-50"
+                />
+              </div>
               <Button type="submit" className="w-full">
                 저장
               </Button>
-            )}
-          </form>
+            </form>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium text-gray-500">
+                  닉네임
+                </Label>
+                <p className="mt-1">{formData.nickname || "미등록"}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-500">
+                  이메일
+                </Label>
+                <p className="mt-1">{formData.email || "미등록"}</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     );
@@ -196,42 +176,64 @@ export default function ProfilePage({
       toast.success("배송지가 삭제되었습니다.");
     }
 
+    function handleEditAddress(id: number) {
+      // 실제 구현에서는 해당 주소 정보를 편집 모드로 전환
+      toast.info("주소 수정 기능은 개발 중입니다.");
+    }
+
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            배송지 관리
-            <Button onClick={() => setIsAdding(true)}>배송지 추가</Button>
+            등록된 주소
+            <Button onClick={() => setIsAdding(true)}>주소 등록</Button>
           </CardTitle>
           <CardDescription>
             주문시 사용할 배송지 정보를 등록하고 관리할 수 있습니다.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {addresses.map((address) => (
-            <div key={address.id} className="border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{address.name}</span>
-                  {address.isDefault && <Badge variant="secondary">기본</Badge>}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDeleteAddress(address.id)}
-                >
-                  삭제
-                </Button>
-              </div>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>받는 사람: {address.recipient}</p>
-                <p>연락처: {address.phone}</p>
-                <p>
-                  주소: {address.address} {address.detailAddress}
-                </p>
-              </div>
+          {addresses.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              등록된 배송지가 없습니다.
             </div>
-          ))}
+          ) : (
+            addresses.map((address) => (
+              <div key={address.id} className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{address.name}</span>
+                    {address.isDefault && (
+                      <Badge variant="secondary">기본</Badge>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditAddress(address.id)}
+                    >
+                      수정
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteAddress(address.id)}
+                    >
+                      삭제
+                    </Button>
+                  </div>
+                </div>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>받는 사람: {address.recipient}</p>
+                  <p>연락처: {address.phone}</p>
+                  <p>
+                    주소: {address.address} {address.detailAddress}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
 
           {isAdding && (
             <form
@@ -389,39 +391,47 @@ export default function ProfilePage({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {mockOrders.map((order) => (
-            <div key={order.id} className="border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">{order.id}</h4>
-                  <p className="text-sm text-gray-600">{order.date}</p>
-                </div>
-                {getStatusBadge(order.status)}
-              </div>
-              <Separator className="my-3" />
-              {order.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center py-2"
-                >
+          {mockOrders.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              주문 내역이 없습니다.
+            </div>
+          ) : (
+            mockOrders.map((order) => (
+              <div key={order.id} className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-600">
-                      수량: {item.quantity}개
+                    <h4 className="font-medium">{order.id}</h4>
+                    <p className="text-sm text-gray-600">{order.date}</p>
+                  </div>
+                  {getStatusBadge(order.status)}
+                </div>
+                <Separator className="my-3" />
+                {order.items.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center py-2"
+                  >
+                    <div>
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-sm text-gray-600">
+                        수량: {item.quantity}개
+                      </p>
+                    </div>
+                    <p className="font-medium">
+                      {item.price.toLocaleString()}원
                     </p>
                   </div>
-                  <p className="font-medium">{item.price.toLocaleString()}원</p>
+                ))}
+                <Separator className="my-3" />
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">총 결제금액</span>
+                  <span className="font-bold text-lg">
+                    {order.total.toLocaleString()}원
+                  </span>
                 </div>
-              ))}
-              <Separator className="my-3" />
-              <div className="flex justify-between items-center">
-                <span className="font-medium">총 결제금액</span>
-                <span className="font-bold text-lg">
-                  {order.total.toLocaleString()}원
-                </span>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </CardContent>
       </Card>
     );
@@ -437,29 +447,20 @@ export default function ProfilePage({
           </p>
         </div>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-6"
-        >
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile">내 정보 관리</TabsTrigger>
-            <TabsTrigger value="shipping">배송지 관리</TabsTrigger>
-            <TabsTrigger value="orders">주문 내역</TabsTrigger>
-          </TabsList>
+        <div className="space-y-8">
+          {/* 내 정보 섹션 */}
+          <ProfileManagement />
 
-          <TabsContent value="profile" className="space-y-4">
-            <ProfileManagement />
-          </TabsContent>
+          <Separator />
 
-          <TabsContent value="shipping" className="space-y-4">
-            <ShippingAddressManagement />
-          </TabsContent>
+          {/* 배송지 관리 섹션 */}
+          <ShippingAddressManagement />
 
-          <TabsContent value="orders" className="space-y-4">
-            <OrderHistory />
-          </TabsContent>
-        </Tabs>
+          <Separator />
+
+          {/* 주문 내역 섹션 */}
+          <OrderHistory />
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 {
-  "id": "045dd108-e2c7-4a18-86c9-b7d0548c4e31",
+  "id": "34241f11-d4bd-4901-9d98-7735ad7786aa",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -328,10 +328,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "cart_items_product_id_product_product_id_fk": {
-          "name": "cart_items_product_id_product_product_id_fk",
+        "cart_items_product_id_products_product_id_fk": {
+          "name": "cart_items_product_id_products_product_id_fk",
           "tableFrom": "cart_items",
-          "tableTo": "product",
+          "tableTo": "products",
           "columnsFrom": [
             "product_id"
           ],
@@ -631,10 +631,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "order_items_product_id_product_product_id_fk": {
-          "name": "order_items_product_id_product_product_id_fk",
+        "order_items_product_id_products_product_id_fk": {
+          "name": "order_items_product_id_products_product_id_fk",
           "tableFrom": "order_items",
-          "tableTo": "product",
+          "tableTo": "products",
           "columnsFrom": [
             "product_id"
           ],
@@ -1136,8 +1136,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.product": {
-      "name": "product",
+    "public.products": {
+      "name": "products",
       "schema": "",
       "columns": {
         "product_id": {
@@ -1147,7 +1147,7 @@
           "notNull": true,
           "identity": {
             "type": "always",
-            "name": "product_product_id_seq",
+            "name": "products_product_id_seq",
             "schema": "public",
             "increment": "1",
             "startWith": "1",
@@ -1159,6 +1159,12 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "unique_name": {
+          "name": "unique_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -1179,12 +1185,6 @@
         "price": {
           "name": "price",
           "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "thumbnail_url": {
-          "name": "thumbnail_url",
-          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1218,11 +1218,71 @@
           "primaryKey": false,
           "notNull": false
         },
+        "detail_page_image_1": {
+          "name": "detail_page_image_1",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "detail_page_image_2": {
+          "name": "detail_page_image_2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detail_page_image_3": {
+          "name": "detail_page_image_3",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detail_page_image_4": {
+          "name": "detail_page_image_4",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detail_page_image_5": {
+          "name": "detail_page_image_5",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "purchase_link": {
+          "name": "purchase_link",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "detail": {
+          "name": "detail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "exchange_refund_policy": {
+          "name": "exchange_refund_policy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shipping_policy": {
+          "name": "shipping_policy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "caution": {
+          "name": "caution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -1241,9 +1301,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "product_category_id_categories_category_id_fk": {
-          "name": "product_category_id_categories_category_id_fk",
-          "tableFrom": "product",
+        "products_category_id_categories_category_id_fk": {
+          "name": "products_category_id_categories_category_id_fk",
+          "tableFrom": "products",
           "tableTo": "categories",
           "columnsFrom": [
             "category_id"
@@ -1256,7 +1316,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "products_unique_name_unique": {
+          "name": "products_unique_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "unique_name"
+          ]
+        }
+      },
       "policies": {
         "public can select products": {
           "name": "public can select products",
@@ -1374,10 +1442,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "reviews_product_id_product_product_id_fk": {
-          "name": "reviews_product_id_product_product_id_fk",
+        "reviews_product_id_products_product_id_fk": {
+          "name": "reviews_product_id_products_product_id_fk",
           "tableFrom": "reviews",
-          "tableTo": "product",
+          "tableTo": "products",
           "columnsFrom": [
             "product_id"
           ],
